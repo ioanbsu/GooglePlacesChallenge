@@ -9,3 +9,6 @@ gen/
 *.war
 *.ear
 *.iml
+*.keystore
+firgerprint.txt
+client_secrest.json
