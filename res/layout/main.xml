@@ -9,4 +9,10 @@
         android:layout_height="wrap_content"
         android:id="@+id/analogClock"
         android:layout_gravity="center_horizontal|top" />
+    <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Call API"
+            android:onClick="callApi"
+            android:id="@+id/button" android:layout_gravity="center"/>
 </FrameLayout>

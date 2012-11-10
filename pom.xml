@@ -5,12 +5,14 @@
     <groupId>com.artigile.android</groupId>
     <artifactId>GooglePlacesChallenge</artifactId>
     <version>1.0</version>
-    <properties>
-        <google-api-client.version>1.12.0-beta</google-api-client.version>
-    </properties>
+
     <packaging>apk</packaging>
     <name>Google Places API</name>
 
+
+    <properties>
+        <google-api-client.version>1.12.0-beta</google-api-client.version>
+    </properties>
     <repositories>
         <repository>
             <id>google-api-services</id>
@@ -39,22 +41,33 @@
         <dependency>
             <groupId>org.roboguice</groupId>
             <artifactId>roboguice</artifactId>
-            <version>2.0b3</version>
+            <version>2.0b4</version>
         </dependency>
-<!--
+
         <dependency>
+        	<groupId>com.google.guava</groupId>
+        	<artifactId>guava</artifactId>
+        	<version>13.0.1</version>
+        </dependency>
+
+    <!--    <dependency>
             <groupId>com.google.api-client</groupId>
             <artifactId>google-api-client</artifactId>
             <version>${google-api-client.version}</version>
-        </dependency>-->
-<!--
-
-        <dependency>
-            <groupId>com.google.http-client</groupId>
-            <artifactId>google-http-client-jackson2</artifactId>
-            <version>${google-api-client.version}</version>
         </dependency>
--->
+        <dependency>
+            <groupId>com.google.api-client-android2</groupId>
+            <artifactId>google-api-client-android2</artifactId>
+            <version>${google-api-client.version}</version>
+        </dependency>-->
+        <!--
+
+                <dependency>
+                    <groupId>com.google.http-client</groupId>
+                    <artifactId>google-http-client-jackson2</artifactId>
+                    <version>${google-api-client.version}</version>
+                </dependency>
+        -->
 
     </dependencies>
 
