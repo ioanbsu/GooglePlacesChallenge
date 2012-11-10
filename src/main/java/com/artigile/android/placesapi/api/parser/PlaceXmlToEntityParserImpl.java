@@ -1,7 +1,7 @@
-package com.artigile.android.placesapi.parser;
+package com.artigile.android.placesapi.api.parser;
 
-import com.artigile.android.placesapi.model.Place;
-import com.artigile.android.placesapi.model.PlacesApiResponseEntity;
+import com.artigile.android.placesapi.api.model.Place;
+import com.artigile.android.placesapi.api.model.PlacesApiResponseEntity;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 

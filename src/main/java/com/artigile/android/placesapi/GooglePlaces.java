@@ -3,46 +3,70 @@ package com.artigile.android.placesapi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.*;
-import com.artigile.android.placesapi.model.Place;
-import com.artigile.android.placesapi.model.PlacesApiResponseEntity;
-import com.artigile.android.placesapi.service.GooglePlacesApiImpl;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.Toast;
+import com.artigile.android.placesapi.api.model.Place;
+import com.artigile.android.placesapi.api.model.PlacesApiResponseEntity;
+import com.artigile.android.placesapi.api.service.GooglePlacesApiImpl;
+import com.artigile.android.placesapi.api.service.RankByType;
+import com.artigile.android.placesapi.app.PlacesArrayAdapter;
+import com.artigile.android.placesapi.app.SearchType;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import roboguice.activity.RoboActivity;
+import roboguice.inject.InjectView;
 
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.List;
 
 @Singleton
-public class GooglePlaces extends RoboActivity {
+public class GooglePlaces extends RoboActivity implements LocationListener {
 
     @Inject
     private SharedPreferences sharedPrefs;
 
     @Inject
-    private IoaNJsonReader ioaNJsonReader;
-
-    @Inject
     private GooglePlacesApiImpl googlePlacesApi;
+
+    @InjectView(R.id.listView)
+    private ListView listView;
+
+
+    @InjectView(R.id.searchText)
+    private EditText searchText;
+
+    private PlacesArrayAdapter placesAdapter;
+    private double longitude;
+    private double latitude;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+
+        LocationManager mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        mlocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         restoreAppProperties();
+        placesAdapter = new PlacesArrayAdapter(getBaseContext());
+        listView.setAdapter(placesAdapter);
     }
 
 
@@ -50,19 +74,6 @@ public class GooglePlaces extends RoboActivity {
     protected void onResume() {
         super.onResume();
     }
-
-    public void surfaceCreated(SurfaceHolder surfaceHolder) {
-
-    }
-
-    public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i1, int i2) {
-
-    }
-
-    public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
-
-    }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -104,24 +115,21 @@ public class GooglePlaces extends RoboActivity {
         return super.onPrepareOptionsMenu(menu);
     }
 
-    public void callApi(View view) {
+    public void searchByCriteria(View view) {
         ConnectivityManager connMgr = (ConnectivityManager)
                 getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
-            new AsyncTask() {
+            new PlacesDownloader().execute(SearchType.SEARCH_BY_CRITERIA);
+        }
+    }
 
-                @Override
-                protected Object doInBackground(Object... params) {
-                    String downloadedString = null;
-                    try {
-                        PlacesApiResponseEntity places = googlePlacesApi.getPlaces("https://maps.googleapis.com/maps/api/place/search/xml?location=-33.8670522,151.1957362&rankby=distance&types=food&name=harbour&sensor=false&key=AIzaSyAiM8su2DOeNr3Ii2sNW6sdm2ZUDIugHak");
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    return downloadedString;
-                }
-            }.execute("some url here");
+    public void searchNearMe(View view) {
+        ConnectivityManager connMgr = (ConnectivityManager)
+                getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.isConnected()) {
+            new PlacesDownloader().execute(SearchType.SEARCH_NEAR_ME);
         }
     }
 
@@ -135,48 +143,62 @@ public class GooglePlaces extends RoboActivity {
     }
 
 
-    // Given a URL, establishes an HttpUrlConnection and retrieves
-    // the web page content as a InputStream, which it returns as
-    // a string.
-    private String downloadUrl(String myurl) throws IOException {
-        InputStream is = null;
-        // Only display the first 500 characters of the retrieved
-        // web page content.
-        int len = 500;
-
-        try {
-            URL url = new URL(myurl);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setReadTimeout(10000 /* milliseconds */);
-            conn.setConnectTimeout(15000 /* milliseconds */);
-            conn.setRequestMethod("GET");
-            conn.setDoInput(true);
-            // Starts the query
-            conn.connect();
-            int response = conn.getResponseCode();
-            Log.d("DEBUG_TAG", "The response is: " + response);
-            is = conn.getInputStream();
-
-            // Convert the InputStream into a string    \
-            ioaNJsonReader.readJsonStream(is);
-            String contentAsString = "asdfasdf";
-            readIt(is, len);
-            return contentAsString;
-
-            // Makes sure that the InputStream is closed after the app is
-            // finished using it.
-        } catch (Exception e) {
-            System.out.println("sdfsdf");
-            return "shit";
-        } finally {
-            if (is != null) {
-                is.close();
-            }
-        }
-    }
-
     private void restoreAppProperties() {
 
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        longitude = location.getLongitude();
+        latitude = location.getLatitude();
+
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+        Toast.makeText(getApplicationContext(), "Status changed" + status, Toast.LENGTH_SHORT).show();
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+        Toast.makeText(getApplicationContext(), "Gps Disabled", Toast.LENGTH_SHORT).show();
+    }
+
+
+    @Override
+    public void onProviderEnabled(String provider) {
+        Toast.makeText(getApplicationContext(), "Gps Enabled", Toast.LENGTH_SHORT).show();
+    }
+
+
+    private class PlacesDownloader extends AsyncTask<SearchType, Void, List<Place>> {
+
+        @Override
+        protected List<Place> doInBackground(SearchType... params) {
+            try {
+                PlacesApiResponseEntity places = null;
+                if (params == null || params[0] == SearchType.SEARCH_NEAR_ME) {
+                    places = googlePlacesApi.searchNearBy("AIzaSyAiM8su2DOeNr3Ii2sNW6sdm2ZUDIugHak",
+                            longitude, latitude, 100, RankByType.PROMINENCE, true, null, null, null, null, null);
+                } else if (params[0] == SearchType.SEARCH_BY_CRITERIA) {
+                    places = googlePlacesApi.textSearch("AIzaSyAiM8su2DOeNr3Ii2sNW6sdm2ZUDIugHak", searchText.getText().toString(), false, null, null, null, null);
+                }
+                if (places != null) {
+                    return places.getPlaceList();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(List<Place> places) {
+            super.onPostExecute(places);
+            placesAdapter.clear();
+            placesAdapter.addAll(places);
+        }
     }
 
 }

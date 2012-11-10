@@ -1,4 +1,4 @@
-package com.artigile.android.placesapi.parser;
+package com.artigile.android.placesapi.api.parser;
 
 import android.util.Log;
 import org.xmlpull.v1.XmlPullParser;

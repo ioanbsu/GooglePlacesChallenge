@@ -1,4 +1,4 @@
-package com.artigile.android.placesapi.model;
+package com.artigile.android.placesapi.api.model;
 
 import java.util.List;
 
@@ -106,5 +106,10 @@ public class Place {
 
     public void setOpeningHours(OpeningHours openingHours) {
         this.openingHours = openingHours;
+    }
+
+    @Override
+    public String toString() {
+        return name +" -" +formattedAddress+", rating:" +rating;
     }
 }

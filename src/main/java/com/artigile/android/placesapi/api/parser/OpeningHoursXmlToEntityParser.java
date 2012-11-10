@@ -1,6 +1,6 @@
-package com.artigile.android.placesapi.parser;
+package com.artigile.android.placesapi.api.parser;
 
-import com.artigile.android.placesapi.model.OpeningHours;
+import com.artigile.android.placesapi.api.model.OpeningHours;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 

@@ -1,4 +1,4 @@
-package com.artigile.android.placesapi.model;
+package com.artigile.android.placesapi.api.model;
 
 import java.util.List;
 

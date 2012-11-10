@@ -1,4 +1,4 @@
-package com.artigile.android.placesapi.service;
+package com.artigile.android.placesapi.api.service;
 
 /**
  * User: ioanbsu
