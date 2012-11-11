@@ -14,21 +14,15 @@ import java.io.IOException;
  */
 @Singleton
 public class OpeningHoursXmlToEntityParser extends AbstractXmlToEntityParser<OpeningHours> {
+
     @Override
-    public OpeningHours parse(XmlPullParser parser,String requiredTag) throws IOException, XmlPullParserException {
-        parser.require(XmlPullParser.START_TAG, "", requiredTag);
-        OpeningHours openingHours = new OpeningHours();
-        while (parser.next() != XmlPullParser.END_TAG) {
-            if (parser.getEventType() != XmlPullParser.START_TAG) {
-                continue;
-            }
-            String name = parser.getName();
-            if (name.equals("open_now")) {
-                openingHours.setOpenNow(readBoolean(parser));
-            } else {
-                skip(parser);
-            }
+    protected void parseValue(XmlPullParser parser, OpeningHours openingHours, String name) throws IOException, XmlPullParserException {
+        if (name.equals("open_now")) {
+            openingHours.setOpenNow(readBoolean(parser));
+        } else {
+            skip(parser);
         }
-        return openingHours;
     }
+
+
 }

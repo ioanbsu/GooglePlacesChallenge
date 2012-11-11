@@ -1,5 +1,6 @@
 package com.artigile.android.placesapi.api.parser;
 
+import com.artigile.android.placesapi.api.model.Location;
 import com.artigile.android.placesapi.api.model.Viewport;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -20,22 +21,13 @@ public class ViewportXmlToEntityParser extends AbstractXmlToEntityParser<Viewpor
     private LocationXmlToEntityParser locationXmlToEntityParser;
 
     @Override
-    public Viewport parse(XmlPullParser parser, String requiredTag) throws IOException, XmlPullParserException {
-        parser.require(XmlPullParser.START_TAG, "", requiredTag);
-        Viewport viewport = new Viewport();
-        while (parser.next() != XmlPullParser.END_TAG) {
-            if (parser.getEventType() != XmlPullParser.START_TAG) {
-                continue;
-            }
-            String name = parser.getName();
-            if (name.equals("southwest")) {
-                viewport.setSouthwest(locationXmlToEntityParser.parse(parser, "southwest"));
-            } else if (name.equals("northeast")) {
-                viewport.setNortheast(locationXmlToEntityParser.parse(parser, "northeast"));
-            } else {
-                skip(parser);
-            }
+    protected void parseValue(XmlPullParser parser, Viewport viewport, String name) throws IOException, XmlPullParserException {
+        if (name.equals("southwest")) {
+            viewport.setSouthwest(locationXmlToEntityParser.parse(parser, "southwest",new Location()));
+        } else if (name.equals("northeast")) {
+            viewport.setNortheast(locationXmlToEntityParser.parse(parser, "northeast",new Location()));
+        } else {
+            skip(parser);
         }
-        return viewport;
     }
 }

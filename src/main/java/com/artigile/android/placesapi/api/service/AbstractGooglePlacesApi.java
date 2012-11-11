@@ -1,7 +1,6 @@
 package com.artigile.android.placesapi.api.service;
 
 import android.util.Log;
-import com.artigile.android.placesapi.api.exception.InvalidParametersException;
 import com.artigile.android.placesapi.api.model.PlacesApiResponseEntity;
 
 import java.io.IOException;
@@ -22,7 +21,7 @@ public abstract class AbstractGooglePlacesApi implements GooglePlacesApi {
 
     protected abstract PlacesUrlsBuilder getUrlBuilder();
 
-    public abstract PlacesApiResponseEntity parseStreamResponse(InputStream is) throws IOException;
+    protected abstract PlacesApiResponseEntity parseStreamResponse(InputStream is,String mainTag) throws IOException;
 
 
     protected HttpURLConnection buildConnection(String newUrl) throws IOException {
@@ -38,21 +37,27 @@ public abstract class AbstractGooglePlacesApi implements GooglePlacesApi {
 
     @Override
     public PlacesApiResponseEntity searchNearBy(String key, double longitude, double latitude, Integer radius,
-                                                RankByType rankBy, Boolean sensor, String keyword, String language,
-                                                String name, Set<String> types, String pageToken) throws IOException, InvalidParametersException {
-        String newUrl = getUrlBuilder().buildSearchNearBy(KEY, longitude, latitude, radius, rankBy, sensor, keyword, language, name,
+                                                RankByType rankBy, boolean sensor, String keyword, String language,
+                                                String name, Set<String> types, String pageToken) throws IOException {
+        String requestUrl = getUrlBuilder().buildSearchNearBy(KEY, longitude, latitude, radius, rankBy, sensor, keyword, language, name,
                 types, pageToken);
-        return doRequestPlaceApi(newUrl);
+        return doRequestPlaceApi(requestUrl,"PlaceSearchResponse");
     }
 
     @Override
-    public PlacesApiResponseEntity textSearch(String key, String query, Boolean sensor, String location, String radius, String language, List<String> types) throws IOException, InvalidParametersException {
-        String newUrl = getUrlBuilder().buildTextSearch(KEY, query, sensor, location, radius, language, types);
-        return doRequestPlaceApi(newUrl);
+    public PlacesApiResponseEntity textSearch(String key, String query, boolean sensor, String location, String radius, String language, List<String> types) throws IOException {
+        String requestUrl = getUrlBuilder().buildTextSearch(KEY, query, sensor, location, radius, language, types);
+        return doRequestPlaceApi(requestUrl,"PlaceSearchResponse");
+    }
+
+    @Override
+    public PlacesApiResponseEntity getPlaceDetails(String key, String reference, boolean sensor, String language) throws IOException {
+        String requestUrl = getUrlBuilder().buildPlaceDetails(key, reference, sensor, language);
+        return doRequestPlaceApi(requestUrl,"PlaceDetailsResponse");
     }
 
 
-    private PlacesApiResponseEntity doRequestPlaceApi(String newUrl) throws IOException {
+    private PlacesApiResponseEntity doRequestPlaceApi(String newUrl,String mainTag) throws IOException {
         InputStream is = null;
         try {
             HttpURLConnection conn = buildConnection(newUrl);
@@ -60,7 +65,7 @@ public abstract class AbstractGooglePlacesApi implements GooglePlacesApi {
             int response = conn.getResponseCode();
             Log.d("DEBUG_TAG", "The response is: " + response);
             is = conn.getInputStream();
-            return parseStreamResponse(is);
+            return parseStreamResponse(is,mainTag);
         } catch (Exception e) {
             return null;
         } finally {

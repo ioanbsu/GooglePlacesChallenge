@@ -1,6 +1,8 @@
 package com.artigile.android.placesapi.api.parser;
 
 import com.artigile.android.placesapi.api.model.Geometry;
+import com.artigile.android.placesapi.api.model.Location;
+import com.artigile.android.placesapi.api.model.Viewport;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -22,22 +24,13 @@ public class GeometryXmlToEntityParser extends AbstractXmlToEntityParser<Geometr
     private ViewportXmlToEntityParser viewportXmlToEntityParser;
 
     @Override
-    public Geometry parse(XmlPullParser parser,String requiredTag) throws IOException, XmlPullParserException {
-        parser.require(XmlPullParser.START_TAG, "",requiredTag);
-        Geometry geometry = new Geometry();
-        while (parser.next() != XmlPullParser.END_TAG) {
-            if (parser.getEventType() != XmlPullParser.START_TAG) {
-                continue;
-            }
-            String name = parser.getName();
-            if (name.equals("location")) {
-                geometry.setLocation(locationXmlToEntityParser.parse(parser,"location"));
-            } else if (name.equals("viewport")) {
-                geometry.setViewport(viewportXmlToEntityParser.parse(parser,"viewport"));
-            } else {
-                skip(parser);
-            }
+    protected void parseValue(XmlPullParser parser, Geometry geometry, String name) throws IOException, XmlPullParserException {
+        if (name.equals("location")) {
+            geometry.setLocation(locationXmlToEntityParser.parse(parser,"location",new Location()));
+        } else if (name.equals("viewport")) {
+            geometry.setViewport(viewportXmlToEntityParser.parse(parser,"viewport", new Viewport()));
+        } else {
+            skip(parser);
         }
-        return geometry;
     }
 }

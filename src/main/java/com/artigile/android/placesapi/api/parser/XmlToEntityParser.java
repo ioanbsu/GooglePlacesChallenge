@@ -12,11 +12,13 @@ import java.io.IOException;
  */
 public interface XmlToEntityParser<T> {
 
-    T parse(XmlPullParser parser,String requiredTag) throws IOException, XmlPullParserException;
+    T parse(XmlPullParser parser,String requiredTag,T objectInstance) throws IOException, XmlPullParserException;
 
     String readText(XmlPullParser parser) throws IOException, XmlPullParserException;
 
     Float readFloat(XmlPullParser parser) throws IOException, XmlPullParserException;
+
+    Integer readInteger(XmlPullParser parser) throws IOException, XmlPullParserException;
 
     Boolean readBoolean(XmlPullParser parser) throws IOException, XmlPullParserException;
 }

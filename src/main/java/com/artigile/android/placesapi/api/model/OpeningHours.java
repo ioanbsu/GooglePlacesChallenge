@@ -1,5 +1,7 @@
 package com.artigile.android.placesapi.api.model;
 
+import java.util.List;
+
 /**
  * User: ioanbsu
  * Date: 11/9/12
@@ -9,11 +11,21 @@ public class OpeningHours {
 
     private boolean openNow;
 
+    private List<PlaceOpenClosePeriod> placeOpenPeriodList;
+
     public boolean isOpenNow() {
         return openNow;
     }
 
     public void setOpenNow(boolean openNow) {
         this.openNow = openNow;
+    }
+
+    public List<PlaceOpenClosePeriod> getPlaceOpenPeriodList() {
+        return placeOpenPeriodList;
+    }
+
+    public void setPlaceOpenPeriodList(List<PlaceOpenClosePeriod> placeOpenPeriodList) {
+        this.placeOpenPeriodList = placeOpenPeriodList;
     }
 }

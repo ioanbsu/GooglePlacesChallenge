@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -28,8 +29,7 @@ import com.google.inject.Singleton;
 import roboguice.activity.RoboActivity;
 import roboguice.inject.InjectView;
 
-import java.io.*;
-import java.util.List;
+import java.io.IOException;
 
 @Singleton
 public class GooglePlaces extends RoboActivity implements LocationListener {
@@ -39,6 +39,9 @@ public class GooglePlaces extends RoboActivity implements LocationListener {
 
     @Inject
     private GooglePlacesApiImpl googlePlacesApi;
+
+    @Inject
+    private AppState appState;
 
     @InjectView(R.id.listView)
     private ListView listView;
@@ -51,28 +54,36 @@ public class GooglePlaces extends RoboActivity implements LocationListener {
     private double longitude;
     private double latitude;
 
+    private LocationManager mlocManager;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-
-        LocationManager mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        mlocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+        mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        placesAdapter = new PlacesArrayAdapter(getBaseContext());
+        listView.setAdapter(placesAdapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                new PlacesDetailsDownloader().execute((Place) listView.getItemAtPosition(position));
+            }
+        });
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         restoreAppProperties();
-        placesAdapter = new PlacesArrayAdapter(getBaseContext());
-        listView.setAdapter(placesAdapter);
     }
 
 
     @Override
     protected void onResume() {
         super.onResume();
+        mapSearchResultsToUi();
+        mlocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
     }
 
     @Override
@@ -88,26 +99,9 @@ public class GooglePlaces extends RoboActivity implements LocationListener {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-
-            case R.id.adjustSensor:
-                Intent intent = new Intent(this, ApplicationConfiguration.class);
-                startActivity(intent);
-                overridePendingTransition(R.anim.fade, R.anim.hold);
-                return true;
-            /*     case R.id.about:
-           System.out.println("About!!!");
-           return true;*/
-            default:
-                /*  // Don't toast text when a submenu is clicked
-                if (!item.hasSubMenu()) {
-                    Toast.makeText(this, item.getTitle(), Toast.LENGTH_SHORT).show();
-                    return true;
-                }*/
-                break;
-        }
-        return false;
+    protected void onPause() {
+        super.onPause();
+        mlocManager.removeUpdates(this);
     }
 
     @Override
@@ -132,16 +126,6 @@ public class GooglePlaces extends RoboActivity implements LocationListener {
             new PlacesDownloader().execute(SearchType.SEARCH_NEAR_ME);
         }
     }
-
-    // Reads an InputStream and converts it to a String.
-    public String readIt(InputStream stream, int len) throws IOException, UnsupportedEncodingException {
-        Reader reader = null;
-        reader = new InputStreamReader(stream, "UTF-8");
-        char[] buffer = new char[len];
-        reader.read(buffer);
-        return new String(buffer);
-    }
-
 
     private void restoreAppProperties() {
 
@@ -172,21 +156,20 @@ public class GooglePlaces extends RoboActivity implements LocationListener {
     }
 
 
-    private class PlacesDownloader extends AsyncTask<SearchType, Void, List<Place>> {
+    private class PlacesDownloader extends AsyncTask<SearchType, Void, String> {
 
         @Override
-        protected List<Place> doInBackground(SearchType... params) {
+        protected String doInBackground(SearchType... params) {
             try {
                 PlacesApiResponseEntity places = null;
+
                 if (params == null || params[0] == SearchType.SEARCH_NEAR_ME) {
                     places = googlePlacesApi.searchNearBy("AIzaSyAiM8su2DOeNr3Ii2sNW6sdm2ZUDIugHak",
                             longitude, latitude, 100, RankByType.PROMINENCE, true, null, null, null, null, null);
                 } else if (params[0] == SearchType.SEARCH_BY_CRITERIA) {
                     places = googlePlacesApi.textSearch("AIzaSyAiM8su2DOeNr3Ii2sNW6sdm2ZUDIugHak", searchText.getText().toString(), false, null, null, null, null);
                 }
-                if (places != null) {
-                    return places.getPlaceList();
-                }
+                appState.setLastSearchResult(places);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -194,11 +177,69 @@ public class GooglePlaces extends RoboActivity implements LocationListener {
         }
 
         @Override
-        protected void onPostExecute(List<Place> places) {
-            super.onPostExecute(places);
-            placesAdapter.clear();
-            placesAdapter.addAll(places);
+        protected void onPostExecute(String aVoid) {
+            super.onPostExecute(aVoid);
+            mapSearchResultsToUi();
         }
+    }
+
+    private void mapSearchResultsToUi() {
+        placesAdapter.clear();
+        if (appState.getLastSearchResult() != null) {
+            placesAdapter.addAll(appState.getLastSearchResult().getPlaceList());
+        }
+    }
+
+    private class PlacesDetailsDownloader extends AsyncTask<Place, Void, String> {
+
+        @Override
+        protected String doInBackground(Place... params) {
+            try {
+                PlacesApiResponseEntity placesApiResponseEntity = googlePlacesApi.getPlaceDetails("AIzaSyAiM8su2DOeNr3Ii2sNW6sdm2ZUDIugHak", params[0].getReference(), true, null);
+                appState.setSelectedPlaceForViewDetails(placesApiResponseEntity);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            if (appState.getLastSearchResult() != null & appState.getLastSearchResult().getPlaceList() != null
+                    && !appState.getLastSearchResult().getPlaceList().isEmpty()) {
+                Intent intent = new Intent(getBaseContext(), PlaceInfo.class);
+                startActivity(intent);
+                //overridePendingTransition(R.anim.fade, R.anim.hold);
+            }
+
+        }
+    }
+
+
+    //================== menu ==========================
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+
+            case R.id.adjustSensor:
+                Intent intent = new Intent(this, ApplicationConfiguration.class);
+                startActivity(intent);
+                overridePendingTransition(R.anim.fade, R.anim.hold);
+                return true;
+            /*     case R.id.about:
+           System.out.println("About!!!");
+           return true;*/
+            default:
+                /*  // Don't toast text when a submenu is clicked
+                if (!item.hasSubMenu()) {
+                    Toast.makeText(this, item.getTitle(), Toast.LENGTH_SHORT).show();
+                    return true;
+                }*/
+                break;
+        }
+        return false;
     }
 
 }

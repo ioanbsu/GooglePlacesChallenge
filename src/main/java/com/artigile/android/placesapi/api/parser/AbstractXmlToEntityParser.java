@@ -1,6 +1,7 @@
 package com.artigile.android.placesapi.api.parser;
 
 import android.util.Log;
+import com.artigile.android.placesapi.api.model.Geometry;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -12,6 +13,21 @@ import java.io.IOException;
  * Time: 2:32 PM
  */
 public abstract class AbstractXmlToEntityParser<T> implements XmlToEntityParser<T> {
+
+    protected abstract  void parseValue(XmlPullParser parser, T object, String name) throws IOException, XmlPullParserException;
+
+    @Override
+    final public T parse(XmlPullParser parser,String requiredTag,T  object) throws IOException, XmlPullParserException {
+        parser.require(XmlPullParser.START_TAG, "",requiredTag);
+        while (parser.next() != XmlPullParser.END_TAG) {
+            if (parser.getEventType() != XmlPullParser.START_TAG) {
+                continue;
+            }
+            String name = parser.getName();
+            parseValue(parser, object, name);
+        }
+        return object;
+    }
 
     @Override
     public String readText(XmlPullParser parser) throws IOException, XmlPullParserException {
@@ -29,6 +45,21 @@ public abstract class AbstractXmlToEntityParser<T> implements XmlToEntityParser<
         if (parser.next() == XmlPullParser.TEXT) {
             try {
                 result = Float.valueOf(parser.getText());
+            } catch (NumberFormatException e) {
+                Log.d("DEBUG_TAG", "Failed to parse Float value from XMl response");
+
+            }
+            parser.nextTag();
+        }
+        return result;
+    }
+
+    @Override
+    public Integer readInteger(XmlPullParser parser) throws IOException, XmlPullParserException {
+        Integer result = null;
+        if (parser.next() == XmlPullParser.TEXT) {
+            try {
+                result = Integer.valueOf(parser.getText());
             } catch (NumberFormatException e) {
                 Log.d("DEBUG_TAG", "Failed to parse Float value from XMl response");
 

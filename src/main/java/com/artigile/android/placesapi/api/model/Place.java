@@ -8,6 +8,12 @@ import java.util.List;
  * Time: 1:31 PM
  */
 public class Place {
+    private String id;
+
+    private List<AddressComponent> addressComponents;
+
+    private List<PlaceEvent> placeEvents;
+
     private String name;
 
     private String vicinity;
@@ -22,11 +28,43 @@ public class Place {
 
     private String reference;
 
-    private String id;
+    private List<PlaceReview> placeReview;
 
     private String formattedAddress;
 
+    private String formattedPhoneNumber;
+
+    private String internationalPhoneNumber;
+
     private OpeningHours openingHours;
+
+    private Integer utcOffset;
+
+    private String website;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public List<AddressComponent> getAddressComponents() {
+        return addressComponents;
+    }
+
+    public void setAddressComponents(List<AddressComponent> addressComponents) {
+        this.addressComponents = addressComponents;
+    }
+
+    public List<PlaceEvent> getPlaceEvents() {
+        return placeEvents;
+    }
+
+    public void setPlaceEvents(List<PlaceEvent> placeEvents) {
+        this.placeEvents = placeEvents;
+    }
 
     public String getName() {
         return name;
@@ -84,12 +122,12 @@ public class Place {
         this.reference = reference;
     }
 
-    public String getId() {
-        return id;
+    public List<PlaceReview> getPlaceReview() {
+        return placeReview;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setPlaceReview(List<PlaceReview> placeReview) {
+        this.placeReview = placeReview;
     }
 
     public String getFormattedAddress() {
@@ -100,12 +138,44 @@ public class Place {
         this.formattedAddress = formattedAddress;
     }
 
+    public String getFormattedPhoneNumber() {
+        return formattedPhoneNumber;
+    }
+
+    public void setFormattedPhoneNumber(String formattedPhoneNumber) {
+        this.formattedPhoneNumber = formattedPhoneNumber;
+    }
+
+    public String getInternationalPhoneNumber() {
+        return internationalPhoneNumber;
+    }
+
+    public void setInternationalPhoneNumber(String internationalPhoneNumber) {
+        this.internationalPhoneNumber = internationalPhoneNumber;
+    }
+
     public OpeningHours getOpeningHours() {
         return openingHours;
     }
 
     public void setOpeningHours(OpeningHours openingHours) {
         this.openingHours = openingHours;
+    }
+
+    public Integer getUtcOffset() {
+        return utcOffset;
+    }
+
+    public void setUtcOffset(Integer utcOffset) {
+        this.utcOffset = utcOffset;
+    }
+
+    public String getWebsite() {
+        return website;
+    }
+
+    public void setWebsite(String website) {
+        this.website = website;
     }
 
     @Override

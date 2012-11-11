@@ -14,23 +14,15 @@ import java.io.IOException;
  */
 @Singleton
 public class LocationXmlToEntityParser extends AbstractXmlToEntityParser<Location> {
+
     @Override
-    public Location parse(XmlPullParser parser,String requiredTag) throws IOException, XmlPullParserException {
-        parser.require(XmlPullParser.START_TAG, "",requiredTag);
-        Location location = new Location();
-        while (parser.next() != XmlPullParser.END_TAG) {
-            if (parser.getEventType() != XmlPullParser.START_TAG) {
-                continue;
-            }
-            String name = parser.getName();
-            if (name.equals("lat")) {
-                location.setLat(readFloat(parser));
-            }else if (name.equals("lng")) {
-                location.setLng(readFloat(parser));
-            } else {
-                skip(parser);
-            }
+    protected void parseValue(XmlPullParser parser, Location location, String name) throws IOException, XmlPullParserException {
+        if (name.equals("lat")) {
+            location.setLat(readFloat(parser));
+        } else if (name.equals("lng")) {
+            location.setLng(readFloat(parser));
+        } else {
+            skip(parser);
         }
-        return location;
     }
 }

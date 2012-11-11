@@ -31,13 +31,14 @@ public class GooglePlacesApiImpl extends AbstractGooglePlacesApi {
     }
 
     @Override
-    public PlacesApiResponseEntity parseStreamResponse(InputStream is) throws IOException {
+    protected PlacesApiResponseEntity parseStreamResponse(InputStream is, String mainTag) throws IOException {
+        PlacesApiResponseEntity placesApiResponseEntity = null;
         try {
             XmlPullParser parser = Xml.newPullParser();
             parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
             parser.setInput(is, null);
             parser.nextTag();
-            return placeXmlParser.parse(parser, "PlaceSearchResponse");
+            placesApiResponseEntity = placeXmlParser.parse(parser, mainTag, new PlacesApiResponseEntity());
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -45,7 +46,7 @@ public class GooglePlacesApiImpl extends AbstractGooglePlacesApi {
                 is.close();
             }
         }
-        return null;
+        return placesApiResponseEntity;
     }
 }
 

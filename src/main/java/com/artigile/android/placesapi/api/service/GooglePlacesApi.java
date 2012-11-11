@@ -1,6 +1,6 @@
 package com.artigile.android.placesapi.api.service;
 
-import com.artigile.android.placesapi.api.exception.InvalidParametersException;
+import com.artigile.android.placesapi.api.model.Place;
 import com.artigile.android.placesapi.api.model.PlacesApiResponseEntity;
 
 import java.io.IOException;
@@ -14,10 +14,12 @@ import java.util.Set;
  */
 public interface GooglePlacesApi {
 
-    PlacesApiResponseEntity searchNearBy(String key, double longitude, double latitude, Integer radius, RankByType rankBy, Boolean sensor,
-                                         String keyword, String language, String name, Set<String> types, String pageToken) throws IOException, InvalidParametersException;
+    PlacesApiResponseEntity searchNearBy(String key, double longitude, double latitude, Integer radius, RankByType rankBy, boolean sensor,
+                                         String keyword, String language, String name, Set<String> types, String pageToken) throws IOException;
 
-    PlacesApiResponseEntity textSearch(String key, String query, Boolean sensor, String location, String radius,
-                                  String language, List<String> types) throws IOException, InvalidParametersException;
+    PlacesApiResponseEntity textSearch(String key, String query, boolean sensor, String location, String radius,
+                                  String language, List<String> types) throws IOException;
+
+    PlacesApiResponseEntity getPlaceDetails(String key,String reference, boolean sensor, String language) throws IOException;
 }
 

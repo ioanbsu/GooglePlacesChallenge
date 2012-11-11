@@ -1,6 +1,5 @@
 package com.artigile.android.placesapi.api.service;
 
-import com.artigile.android.placesapi.api.exception.InvalidParametersException;
 
 import java.util.List;
 import java.util.Set;
@@ -10,9 +9,11 @@ import java.util.Set;
  */
 public interface PlacesUrlsBuilder {
 
-    String buildSearchNearBy(String key, double longitude, double latitude, Integer radius, RankByType rankBy, Boolean sensor,
-                             String keyword, String language, String name, Set<String> types, String pageToken) throws InvalidParametersException;
+    String buildSearchNearBy(String key, double longitude, double latitude, Integer radius, RankByType rankBy, boolean sensor,
+                             String keyword, String language, String name, Set<String> types, String pageToken);
 
-    String buildTextSearch(String key, String query, Boolean sensor, String location, String radius,
-                           String language, List<String> types) throws InvalidParametersException;
+    String buildTextSearch(String key, String query, boolean sensor, String location, String radius,
+                           String language, List<String> types);
+
+    String buildPlaceDetails(String key, String reference, boolean sensor, String language);
 }
