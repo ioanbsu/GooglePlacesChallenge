@@ -3,6 +3,7 @@
 target/
 gen/
 
+keys.xml
 
 # Package Files #
 *.jar

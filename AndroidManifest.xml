@@ -20,12 +20,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".PlaceInfo"
-            android:launchMode="standard"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
-        </activity>
-        <activity
-            android:name=".MapActivity"
+            android:name=".ShowAllPlacesOnMapActivity"
             android:launchMode="standard"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
         </activity>

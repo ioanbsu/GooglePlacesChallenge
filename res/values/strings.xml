@@ -2,4 +2,8 @@
 <resources>
     <string name="app_name">Places Popularity</string>
     <string name="app_settings">Settings</string>
+    <string name="search_textbox_hint">Enter search requirements</string>
+    <string name="search_by_location">Search by location</string>
+    <string name="search_near_me">Search near me</string>
+    <string name="show_all_on_map">Show All On Map</string>
 </resources>

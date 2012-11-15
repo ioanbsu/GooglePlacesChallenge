@@ -15,7 +15,7 @@
         <EditText
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="Enter search requirements"
+            android:hint="@string/search_textbox_hint"
             android:id="@+id/searchText"
             />
 
@@ -29,7 +29,7 @@
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
-                android:text="Search by location"
+                android:text="@string/search_by_location"
                 android:onClick="searchByCriteria"
                 android:id="@+id/button"
                 android:layout_gravity="center"/>
@@ -37,10 +37,17 @@
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Search near me"
+                android:text="@string/search_near_me"
                 android:onClick="searchNearMe"
                 android:id="@+id/searchNearMe"
                 android:layout_gravity="center"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:text="@string/show_all_on_map"
+                android:onClick="showAllOnMap"
+                android:id="@+id/showAllOnMap"/>
         </LinearLayout>
 
 

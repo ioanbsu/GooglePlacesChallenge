@@ -96,12 +96,12 @@ public class GooglePlaces extends RoboActivity implements LocationListener {
     @Override
     protected void onStop() {
         super.onStop();
+        mlocManager.removeUpdates(this);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        mlocManager.removeUpdates(this);
     }
 
     @Override
@@ -116,6 +116,11 @@ public class GooglePlaces extends RoboActivity implements LocationListener {
         if (networkInfo != null && networkInfo.isConnected()) {
             new PlacesDownloader().execute(SearchType.SEARCH_BY_CRITERIA);
         }
+    }
+
+    public void showAllOnMap(View view){
+        Intent intent = new Intent(getBaseContext(), ShowAllPlacesOnMapActivity.class);
+        startActivity(intent);
     }
 
     public void searchNearMe(View view) {
@@ -164,10 +169,10 @@ public class GooglePlaces extends RoboActivity implements LocationListener {
                 PlacesApiResponseEntity places = null;
 
                 if (params == null || params[0] == SearchType.SEARCH_NEAR_ME) {
-                    places = googlePlacesApi.searchNearBy("KEY",
+                    places = googlePlacesApi.searchNearBy(getBaseContext().getString(R.string.api_key),
                             longitude, latitude, 100, RankByType.PROMINENCE, true, null, null, null, null, null);
                 } else if (params[0] == SearchType.SEARCH_BY_CRITERIA) {
-                    places = googlePlacesApi.textSearch("KEY", searchText.getText().toString(), false, null, null, null, null);
+                    places = googlePlacesApi.textSearch(getBaseContext().getString(R.string.api_key), searchText.getText().toString(), false, null, null, null, null);
                 }
                 appState.setLastSearchResult(places);
             } catch (IOException e) {
@@ -195,7 +200,7 @@ public class GooglePlaces extends RoboActivity implements LocationListener {
         @Override
         protected String doInBackground(Place... params) {
             try {
-                PlacesApiResponseEntity placesApiResponseEntity = googlePlacesApi.getPlaceDetails("KEY", params[0].getReference(), true, null);
+                PlacesApiResponseEntity placesApiResponseEntity = googlePlacesApi.getPlaceDetails(getBaseContext().getString(R.string.api_key), params[0].getReference(), true, null);
                 appState.setSelectedPlaceForViewDetails(placesApiResponseEntity);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -208,7 +213,7 @@ public class GooglePlaces extends RoboActivity implements LocationListener {
             super.onPostExecute(result);
             if (appState.getLastSearchResult() != null & appState.getLastSearchResult().getPlaceList() != null
                     && !appState.getLastSearchResult().getPlaceList().isEmpty()) {
-                Intent intent = new Intent(getBaseContext(), MapActivity.class);
+                Intent intent = new Intent(getBaseContext(), ShowAllPlacesOnMapActivity.class);
                 startActivity(intent);
                 //overridePendingTransition(R.anim.fade, R.anim.hold);
             }

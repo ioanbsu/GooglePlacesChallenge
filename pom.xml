@@ -12,6 +12,8 @@
 
     <properties>
         <google-api-client.version>1.12.0-beta</google-api-client.version>
+        <maps.key>maps jey</maps.key>
+        <api.key>maps jey</api.key>
     </properties>
     <repositories>
         <repository>

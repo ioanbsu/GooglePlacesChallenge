@@ -17,6 +17,7 @@ import com.google.common.io.ByteStreams;
 
 import java.io.*;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,7 +27,6 @@ import java.util.Map;
 public class PlacesArrayAdapter extends ArrayAdapter<Place> {
     private final Context context;
 
-    private static Map<String, Bitmap> cachedImages = new HashMap<String, Bitmap>();
 
     public PlacesArrayAdapter(Context context) {
         super(context, R.layout.list_place);
@@ -47,10 +47,10 @@ public class PlacesArrayAdapter extends ArrayAdapter<Place> {
         new AsyncTask<String, Void, Bitmap>() {
             @Override
             protected Bitmap doInBackground(String... params) {
-                if (!cachedImages.containsKey(getItem(position).getIcon())) {
+              /*  if (!cachedImages.containsKey(getItem(position).getIcon())) {
                     cachedImages.put(getItem(position).getIcon(), loadBitmap(getItem(position).getIcon()));
-                }
-                return cachedImages.get(getItem(position).getIcon());
+                }*/
+                return  BitmapLoader.loadBitmap(getItem(position).getIcon());
             }
 
             @Override
@@ -58,7 +58,7 @@ public class PlacesArrayAdapter extends ArrayAdapter<Place> {
                 super.onPostExecute(s);
                 imageView.setImageBitmap(s);
             }
-        }.execute("sdfsd");
+        }.execute("result");
         return rowView;
     }
 
@@ -69,8 +69,12 @@ public class PlacesArrayAdapter extends ArrayAdapter<Place> {
 
         try {
             int IO_BUFFER_SIZE = 1024 * 1024;
-            in = new BufferedInputStream(new URL(url).openStream(), IO_BUFFER_SIZE);
-
+            //in = new BufferedInputStream(new URL(url).openStream(), IO_BUFFER_SIZE);
+            URL urlz=new URL(url);
+            URLConnection connection = urlz.openConnection();
+            connection.setUseCaches(true);
+            connection.connect();
+            in=connection.getInputStream();
             final ByteArrayOutputStream dataStream = new ByteArrayOutputStream();
             out = new BufferedOutputStream(dataStream, IO_BUFFER_SIZE);
             ByteStreams.copy(in, out);
