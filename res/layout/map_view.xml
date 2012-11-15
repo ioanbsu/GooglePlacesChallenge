@@ -4,5 +4,5 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:clickable="true"
-    android:apiKey="AIzaSyAiM8su2DOeNr3Ii2sNW6sdm2ZUDIugHak"
+    android:apiKey="KEY HERE"
     />
