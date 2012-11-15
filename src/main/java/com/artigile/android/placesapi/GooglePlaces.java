@@ -164,10 +164,10 @@ public class GooglePlaces extends RoboActivity implements LocationListener {
                 PlacesApiResponseEntity places = null;
 
                 if (params == null || params[0] == SearchType.SEARCH_NEAR_ME) {
-                    places = googlePlacesApi.searchNearBy("AIzaSyAiM8su2DOeNr3Ii2sNW6sdm2ZUDIugHak",
+                    places = googlePlacesApi.searchNearBy("KEY",
                             longitude, latitude, 100, RankByType.PROMINENCE, true, null, null, null, null, null);
                 } else if (params[0] == SearchType.SEARCH_BY_CRITERIA) {
-                    places = googlePlacesApi.textSearch("AIzaSyAiM8su2DOeNr3Ii2sNW6sdm2ZUDIugHak", searchText.getText().toString(), false, null, null, null, null);
+                    places = googlePlacesApi.textSearch("KEY", searchText.getText().toString(), false, null, null, null, null);
                 }
                 appState.setLastSearchResult(places);
             } catch (IOException e) {
@@ -195,7 +195,7 @@ public class GooglePlaces extends RoboActivity implements LocationListener {
         @Override
         protected String doInBackground(Place... params) {
             try {
-                PlacesApiResponseEntity placesApiResponseEntity = googlePlacesApi.getPlaceDetails("AIzaSyAiM8su2DOeNr3Ii2sNW6sdm2ZUDIugHak", params[0].getReference(), true, null);
+                PlacesApiResponseEntity placesApiResponseEntity = googlePlacesApi.getPlaceDetails("KEY", params[0].getReference(), true, null);
                 appState.setSelectedPlaceForViewDetails(placesApiResponseEntity);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -208,7 +208,7 @@ public class GooglePlaces extends RoboActivity implements LocationListener {
             super.onPostExecute(result);
             if (appState.getLastSearchResult() != null & appState.getLastSearchResult().getPlaceList() != null
                     && !appState.getLastSearchResult().getPlaceList().isEmpty()) {
-                Intent intent = new Intent(getBaseContext(), PlaceInfo.class);
+                Intent intent = new Intent(getBaseContext(), MapActivity.class);
                 startActivity(intent);
                 //overridePendingTransition(R.anim.fade, R.anim.hold);
             }
