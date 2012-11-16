@@ -4,7 +4,9 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.MotionEvent;
+import android.view.View;
+import android.widget.RatingBar;
+import android.widget.TextView;
 import com.artigile.android.placesapi.api.model.Place;
 import com.artigile.android.placesapi.app.BaloonOverlay;
 import com.artigile.android.placesapi.app.BaloonTapListener;
@@ -13,6 +15,7 @@ import com.artigile.android.placesapi.app.model.PlaceBitmapModel;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
 import com.google.android.maps.OverlayItem;
+import com.google.common.base.Joiner;
 import roboguice.activity.RoboMapActivity;
 import roboguice.inject.InjectView;
 
@@ -23,8 +26,21 @@ import javax.inject.Inject;
  */
 public class ShowAllPlacesOnMapActivity extends RoboMapActivity {
 
+
     @InjectView(R.id.mapview)
     private MapView mapView;
+
+    @InjectView(R.id.placeName)
+    private TextView placeName;
+
+    @InjectView(R.id.placePhoneNumber)
+    private TextView placePhoneNumber;
+
+    @InjectView(R.id.placeType)
+    private TextView placeType;
+
+    @InjectView(R.id.placeRatingStars)
+    private RatingBar placeRatingStars;
 
     @Inject
     private AppState appState;
@@ -45,10 +61,10 @@ public class ShowAllPlacesOnMapActivity extends RoboMapActivity {
     protected void onResume() {
         super.onResume();
         mapView.getOverlays().clear();
-        if (appState.getLastSearchResult() != null
-                && appState.getLastSearchResult().getPlaceList() != null
-                && !appState.getLastSearchResult().getPlaceList().isEmpty()) {
-            for (final Place selectedPlace : appState.getLastSearchResult().getPlaceList()) {
+        if (appState.getSelectedPlaceForViewDetails() != null
+                && appState.getSelectedPlaceForViewDetails().getPlaceList() != null
+                && !appState.getSelectedPlaceForViewDetails().getPlaceList().isEmpty()) {
+            for (final Place selectedPlace : appState.getSelectedPlaceForViewDetails().getPlaceList()) {
 
                 new AsyncTask<String, Void, PlaceBitmapModel>() {
                     @Override
@@ -71,7 +87,7 @@ public class ShowAllPlacesOnMapActivity extends RoboMapActivity {
                             baloonOverlay.setBaloonClickListener(createBaloonListener());
                         }
                     }
-                }.execute("result");
+                }.execute();
 
             }
 
@@ -82,7 +98,15 @@ public class ShowAllPlacesOnMapActivity extends RoboMapActivity {
       return new BaloonTapListener<Place>() {
           @Override
           public void onBaloonTapped(Place tapedValue) {
-              System.out.println("sdfsdf");
+              placeName.setText(tapedValue.getName());
+              placePhoneNumber.setText(tapedValue.getFormattedPhoneNumber());
+              if (tapedValue.getRating() != null) {
+                  placeRatingStars.setVisibility(View.VISIBLE);
+                  placeRatingStars.setRating(tapedValue.getRating());
+              }else{
+                  placeRatingStars.setVisibility(View.GONE);
+              }
+              placeType.setText(Joiner.on(", ").skipNulls().join(tapedValue.getTypes()));
           }
       };
 
@@ -94,7 +118,7 @@ public class ShowAllPlacesOnMapActivity extends RoboMapActivity {
     }
 
     private BitmapDrawable scaleBitmap(Bitmap bitmap) {
-        Bitmap bitmapOrig = Bitmap.createScaledBitmap(bitmap, 40, 40, false);
+        Bitmap bitmapOrig = Bitmap.createScaledBitmap(bitmap, 60, 60, false);
         return new BitmapDrawable(getResources(), bitmapOrig);
     }
 }

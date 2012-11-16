@@ -2,10 +2,7 @@ package com.artigile.android.placesapi.app;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.http.HttpResponseCache;
 
-import java.io.Closeable;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
@@ -27,12 +24,13 @@ public class BitmapLoader {
         try {
             URL url = new URL(urlString);
             URLConnection connection = url.openConnection();
-            connection.addRequestProperty("Cache-Control", "only-if-cached");
+            int maxStale = 60 * 60 * 24 * 28; // tolerate 4-weeks stale
+            connection.addRequestProperty("Cache-Control", "max-stale=" + maxStale);
             connection.setUseCaches(true);
             cachedImages.put(urlString, BitmapFactory.decodeStream((InputStream) connection.getContent()));
             return cachedImages.get(urlString);
         } catch (Exception e) {
-
+            System.out.println("hello there");
         }
         return null;
     }

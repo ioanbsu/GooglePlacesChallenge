@@ -78,8 +78,6 @@ import java.util.ArrayList;
         if(baloonClickListener!=null){
             baloonClickListener.onBaloonTapped(object);
         }
-        String title = myOverlays.get(index).getTitle();
-        Toast.makeText(contextWrapper.getBaseContext(), title, Toast.LENGTH_LONG).show();
         return super.onTap(index);
     }
 }

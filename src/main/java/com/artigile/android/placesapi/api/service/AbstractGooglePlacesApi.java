@@ -17,8 +17,6 @@ import java.util.Set;
  */
 public abstract class AbstractGooglePlacesApi implements GooglePlacesApi {
 
-    public static final String KEY = "AIzaSyAiM8su2DOeNr3Ii2sNW6sdm2ZUDIugHak";
-
     protected abstract PlacesUrlsBuilder getUrlBuilder();
 
     protected abstract PlacesApiResponseEntity parseStreamResponse(InputStream is,String mainTag) throws IOException;
@@ -39,14 +37,14 @@ public abstract class AbstractGooglePlacesApi implements GooglePlacesApi {
     public PlacesApiResponseEntity searchNearBy(String key, double longitude, double latitude, Integer radius,
                                                 RankByType rankBy, boolean sensor, String keyword, String language,
                                                 String name, Set<String> types, String pageToken) throws IOException {
-        String requestUrl = getUrlBuilder().buildSearchNearBy(KEY, longitude, latitude, radius, rankBy, sensor, keyword, language, name,
+        String requestUrl = getUrlBuilder().buildSearchNearBy(key, longitude, latitude, radius, rankBy, sensor, keyword, language, name,
                 types, pageToken);
         return doRequestPlaceApi(requestUrl,"PlaceSearchResponse");
     }
 
     @Override
     public PlacesApiResponseEntity textSearch(String key, String query, boolean sensor, String location, String radius, String language, List<String> types) throws IOException {
-        String requestUrl = getUrlBuilder().buildTextSearch(KEY, query, sensor, location, radius, language, types);
+        String requestUrl = getUrlBuilder().buildTextSearch(key, query, sensor, location, radius, language, types);
         return doRequestPlaceApi(requestUrl,"PlaceSearchResponse");
     }
 

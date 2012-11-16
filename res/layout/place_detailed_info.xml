@@ -1,17 +1,23 @@
-<LinearLayout
+<RelativeLayout
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/imageView"/>
-
+    <com.google.android.maps.MapView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/mapview"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:clickable="true"
+        android:apiKey="@string/maps_key"
+        />
     <TableLayout
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:id="@+id/tableLayout"
+        android:background="#fff"
+        android:paddingLeft="50dp">
 
         <TableRow
             android:layout_width="fill_parent"
@@ -21,13 +27,38 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Name:"
-                android:id="@+id/textView"/>
+                android:id="@+id/textView"
+                android:textColor="#000"
+                android:textStyle="bold"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/placeName"
-                android:layout_column="1"/>
+                android:layout_column="1"
+                android:textColor="#000"/>
+
+        </TableRow>
+
+        <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Phone:"
+                android:id="@+id/textView2"
+                android:layout_column="0"
+                android:textColor="#000"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/placePhoneNumber"
+                android:layout_column="1"
+                android:textColor="#000"/>
         </TableRow>
 
         <TableRow
@@ -39,58 +70,33 @@
                 android:layout_height="wrap_content"
                 android:text="Place Type:"
                 android:id="@+id/textView1"
-                android:layout_column="0"/>
+                android:layout_column="0"
+                android:textColor="#000"
+                android:textStyle="bold"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/placeType"
-                android:layout_column="1"/>
-        </TableRow>
-
-        <TableRow
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Phone:"
-                android:id="@+id/textView2"
-                android:layout_column="0"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/placePhoneNumber"
-                android:layout_column="1"/>
-        </TableRow>
-
-        <TableRow
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Rating:"
-                android:id="@+id/textView4"
-                android:layout_column="0"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/placeRating"
-                android:layout_column="1"/>
+                android:layout_column="1"
+                android:textColor="#000"
+                    />
         </TableRow>
 
     </TableLayout>
-    <com.google.android.maps.MapView
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/mapview"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:clickable="true"
-        android:apiKey="@string/maps_key"
-        />
-</LinearLayout>
+
+    <RatingBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/placeRatingStars"
+            android:numStars="5"
+            android:rating="0"
+            android:clickable="false"
+            android:isIndicator="true"
+            android:stepSize="0.5"
+            android:layout_gravity="center"
+            android:layout_alignLeft="@+id/mapview"
+            android:layout_below="@+id/tableLayout"
+            android:focusable="false"
+            android:focusableInTouchMode="false"/>
+</RelativeLayout>
