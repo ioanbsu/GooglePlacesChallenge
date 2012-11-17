@@ -7,7 +7,7 @@
         >
 
     <ImageView
-        android:id="@+id/logo"
+        android:id="@+id/placeInListLogo"
         android:layout_width="50px"
         android:layout_height="50px"
         android:layout_marginLeft="5px"
@@ -16,10 +16,9 @@
     </ImageView>
 
     <TextView
-        android:id="@+id/label"
+        android:id="@+id/placeInListDetails"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@+id/label"
         android:textSize="30px" >
     </TextView>
 

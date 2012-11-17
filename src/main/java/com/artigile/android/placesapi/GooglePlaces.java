@@ -1,35 +1,35 @@
 package com.artigile.android.placesapi;
 
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.*;
-import android.view.inputmethod.EditorInfo;
-import android.widget.*;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.SearchView;
 import com.artigile.android.placesapi.api.model.Place;
 import com.artigile.android.placesapi.api.model.PlacesApiResponseEntity;
 import com.artigile.android.placesapi.api.service.GooglePlacesApiImpl;
 import com.artigile.android.placesapi.api.service.RankByType;
-import com.artigile.android.placesapi.app.PlacesArrayAdapter;
+import com.artigile.android.placesapi.app.PlaceEfficientAdapter;
+import com.artigile.android.placesapi.app.LocationProvider;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import roboguice.activity.RoboActivity;
+import roboguice.activity.RoboListActivity;
 import roboguice.inject.InjectView;
 
 import java.io.IOException;
 
 @Singleton
-public class GooglePlaces extends RoboActivity implements LocationListener {
-
-    @Inject
-    private SharedPreferences sharedPrefs;
+public class GooglePlaces extends RoboListActivity implements SearchView.OnQueryTextListener {
 
     @Inject
     private GooglePlacesApiImpl googlePlacesApi;
@@ -37,16 +37,14 @@ public class GooglePlaces extends RoboActivity implements LocationListener {
     @Inject
     private AppState appState;
 
-    @InjectView(R.id.listView)
+    @Inject
+    private LocationProvider locationProvider;
+
+    @InjectView(android.R.id.list)
     private ListView listView;
 
-
-    @InjectView(R.id.searchText)
-    private EditText searchText;
-
-    private PlacesArrayAdapter placesAdapter;
-    private double longitude;
-    private double latitude;
+    @InjectView(R.id.placesSearchLoadingBar)
+    private ProgressBar progressBar;
 
     private LocationManager mlocManager;
 
@@ -56,42 +54,19 @@ public class GooglePlaces extends RoboActivity implements LocationListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        placesAdapter = new PlacesArrayAdapter(getBaseContext());
-        listView.setAdapter(placesAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 new PlacesDetailsDownloader().execute((Place) listView.getItemAtPosition(position));
             }
         });
-        searchText.setOnEditorActionListener(actionListener);
     }
-
-    private TextView.OnEditorActionListener actionListener = new TextView.OnEditorActionListener() {
-        @Override
-        public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-            boolean handled = false;
-            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                doSearch();
-                handled = true;
-            }
-            return handled;
-        }
-    };
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        restoreAppProperties();
-    }
-
 
     @Override
     protected void onResume() {
         super.onResume();
         mapSearchResultsToUi();
-        mlocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
-
+        mlocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationProvider);
     }
 
 
@@ -99,23 +74,22 @@ public class GooglePlaces extends RoboActivity implements LocationListener {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.app_menu, menu);
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView = (SearchView) menu.findItem(R.id.searchView).getActionView();
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchView.setOnQueryTextListener(this);
         return true;
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        mlocManager.removeUpdates(this);
+        mlocManager.removeUpdates(locationProvider);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        return super.onPrepareOptionsMenu(menu);
     }
 
     public void showAllOnMap(View view){
@@ -124,75 +98,31 @@ public class GooglePlaces extends RoboActivity implements LocationListener {
         startActivity(intent);
     }
 
-    public void searchNearMe(View view) {
-        doSearch();
-    }
-
-
-    private void restoreAppProperties() {
-
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        longitude = location.getLongitude();
-        latitude = location.getLatitude();
-
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-        Toast.makeText(getApplicationContext(), "Status changed: " + status, Toast.LENGTH_SHORT).show();
-
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-        Toast.makeText(getApplicationContext(), "Gps Disabled", Toast.LENGTH_SHORT).show();
-    }
-
-
-    @Override
-    public void onProviderEnabled(String provider) {
-        Toast.makeText(getApplicationContext(), "Gps Enabled", Toast.LENGTH_SHORT).show();
-    }
-
-    private void doSearch() {
+    private void doSearch(String searchQuery) {
+        progressBar.setVisibility(View.VISIBLE);
         ConnectivityManager connMgr = (ConnectivityManager)
                 getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
-            new PlacesDownloader().execute();
+            new PlacesDownloader().execute(searchQuery);
         }
     }
 
-
-    private class PlacesDownloader extends AsyncTask<String, Void, String> {
-
-        @Override
-        protected String doInBackground(String... params) {
-            try {
-                PlacesApiResponseEntity places = null;
-                    places = googlePlacesApi.searchNearBy(getBaseContext().getString(R.string.api_key),
-                            longitude, latitude, 100, RankByType.PROMINENCE, true, searchText.getText().toString(), null, null, null, null);
-                appState.setLastSearchResult(places);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(String aVoid) {
-            super.onPostExecute(aVoid);
-            mapSearchResultsToUi();
-        }
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        doSearch(query);
+        return false;
     }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        return false;
+    }
+
 
     private void mapSearchResultsToUi() {
-        placesAdapter.clear();
         if (appState.getLastSearchResult() != null && appState.getLastSearchResult().getPlaceList() != null) {
-            placesAdapter.addAll(appState.getLastSearchResult().getPlaceList());
+            listView.setAdapter(new PlaceEfficientAdapter(getBaseContext(), appState.getLastSearchResult().getPlaceList()));
         }
     }
 
@@ -216,37 +146,34 @@ public class GooglePlaces extends RoboActivity implements LocationListener {
                     && !appState.getLastSearchResult().getPlaceList().isEmpty()) {
                 Intent intent = new Intent(getBaseContext(), ShowAllPlacesOnMapActivity.class);
                 startActivity(intent);
-                //overridePendingTransition(R.anim.fade, R.anim.hold);
+                overridePendingTransition(R.anim.fade, R.anim.hold);
             }
 
         }
     }
 
 
-    //================== menu ==========================
+    private class PlacesDownloader extends AsyncTask<String, Void, String> {
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-
-            case R.id.adjustSensor:
-                Intent intent = new Intent(this, ApplicationConfiguration.class);
-                startActivity(intent);
-                overridePendingTransition(R.anim.fade, R.anim.hold);
-                return true;
-            /*     case R.id.about:
-           System.out.println("About!!!");
-           return true;*/
-            default:
-                /*  // Don't toast text when a submenu is clicked
-                if (!item.hasSubMenu()) {
-                    Toast.makeText(this, item.getTitle(), Toast.LENGTH_SHORT).show();
-                    return true;
-                }*/
-                break;
+        @Override
+        protected String doInBackground(String... params) {
+            try {
+                String searchQuery = params == null ? null : params[0];
+                PlacesApiResponseEntity places = googlePlacesApi.searchNearBy(getBaseContext().getString(R.string.api_key),
+                        locationProvider.getLongitude(), locationProvider.getLatitude(), 1000, RankByType.PROMINENCE, true, searchQuery, null, null, null, null);
+                appState.setLastSearchResult(places);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
         }
-        return false;
-    }
 
+        @Override
+        protected void onPostExecute(String aVoid) {
+            super.onPostExecute(aVoid);
+            mapSearchResultsToUi();
+            progressBar.setVisibility(View.GONE);
+        }
+    }
 }
 

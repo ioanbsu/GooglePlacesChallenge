@@ -7,4 +7,5 @@
     <string name="search_near_me">Search near me</string>
     <string name="show_all_on_map">Show All On Map</string>
     <string name="search_near_me_enter">near me!</string>
+    <string name="search_hint">Tap to filter search</string>
 </resources>
