@@ -2,9 +2,9 @@ package com.artigile.android.placesapi.app;
 
 import android.content.ContextWrapper;
 import android.graphics.drawable.Drawable;
-import android.widget.Toast;
+import com.artigile.android.placesapi.api.model.Place;
 import com.google.android.maps.GeoPoint;
-import com.google.android.maps.ItemizedOverlay;
+import com.google.android.maps.MapView;
 import com.google.android.maps.OverlayItem;
 
 import java.util.ArrayList;
@@ -12,25 +12,24 @@ import java.util.ArrayList;
 /**
  * @author IoaN, 11/14/12 7:21 PM
  */
- public class BaloonOverlay<T> extends ItemizedOverlay<OverlayItem> {
+public class PlaceOverlay extends BalloonItemizedOverlay<OverlayItem> {
 
-    private ContextWrapper contextWrapper;
 
-    private ArrayList<OverlayItem> myOverlays ;
+    private ArrayList<OverlayItem> myOverlays;
 
-    private T object;
+    private Place object;
 
-    private BaloonTapListener<T> baloonClickListener;
+    private BaloonTapListener<Place> baloonClickListener;
 
-    public BaloonOverlay(Drawable defaultMarker,T object, ContextWrapper contextWrapper) {
-        super(boundCenterBottom(defaultMarker));
-        this.contextWrapper=contextWrapper;
+
+    public PlaceOverlay(Drawable defaultMarker, MapView mapView, Place object) {
+        super(boundCenterBottom(defaultMarker), mapView);
         myOverlays = new ArrayList<OverlayItem>();
-        this.object=object;
+        this.object = object;
         populate();
     }
 
-    public void addOverlay(OverlayItem overlay){
+    public void addOverlay(OverlayItem overlay) {
         myOverlays.add(overlay);
         populate();
     }
@@ -41,7 +40,7 @@ import java.util.ArrayList;
     }
 
     // Removes overlay item i
-    public void removeItem(int i){
+    public void removeItem(int i) {
         myOverlays.remove(i);
         populate();
     }
@@ -69,13 +68,18 @@ import java.util.ArrayList;
         }
     }
 
-    public void setBaloonClickListener(BaloonTapListener<T> baloonClickListener){
-       this.baloonClickListener=baloonClickListener;
+    public void setBaloonClickListener(BaloonTapListener<Place> baloonClickListener) {
+        this.baloonClickListener = baloonClickListener;
+    }
+
+    @Override
+    protected Place getOverlayPlaceObject() {
+        return object;
     }
 
     @Override
     protected boolean onTap(int index) {
-        if(baloonClickListener!=null){
+        if (baloonClickListener != null) {
             baloonClickListener.onBaloonTapped(object);
         }
         return super.onTap(index);

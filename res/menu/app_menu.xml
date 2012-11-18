@@ -4,4 +4,9 @@
           android:title="@string/search_hint"
           android:showAsAction="ifRoom|collapseActionView"
           android:actionViewClass="android.widget.SearchView" />
+    <item android:id="@+id/searchAll"
+        android:title="Search"
+        android:showAsAction="always"
+        android:onClick="doSearchAll"
+        />
 </menu>

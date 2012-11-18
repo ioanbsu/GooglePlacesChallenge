@@ -4,13 +4,15 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import com.artigile.android.placesapi.api.model.Place;
-import com.artigile.android.placesapi.app.BaloonOverlay;
 import com.artigile.android.placesapi.app.BaloonTapListener;
 import com.artigile.android.placesapi.app.BitmapLoader;
+import com.artigile.android.placesapi.app.PlaceOverlay;
 import com.artigile.android.placesapi.app.model.PlaceBitmapModel;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
@@ -29,18 +31,6 @@ public class ShowAllPlacesOnMapActivity extends RoboMapActivity {
 
     @InjectView(R.id.mapview)
     private MapView mapView;
-
-    @InjectView(R.id.placeName)
-    private TextView placeName;
-
-    @InjectView(R.id.placePhoneNumber)
-    private TextView placePhoneNumber;
-
-    @InjectView(R.id.placeType)
-    private TextView placeType;
-
-    @InjectView(R.id.placeRatingStars)
-    private RatingBar placeRatingStars;
 
     @Inject
     private AppState appState;
@@ -64,12 +54,22 @@ public class ShowAllPlacesOnMapActivity extends RoboMapActivity {
         if (appState.getSelectedPlaceForViewDetails() != null
                 && appState.getSelectedPlaceForViewDetails().getPlaceList() != null
                 && !appState.getSelectedPlaceForViewDetails().getPlaceList().isEmpty()) {
+            float minLeft = Float.MAX_VALUE;
+            float maxRight = Float.MIN_VALUE;
+            float minBottom = Float.MAX_VALUE;
+            float maxTop = Float.MIN_VALUE;
+            if (appState.getSelectedPlaceForViewDetails().getPlaceList().size() == 1) {
+                showPlaceDetails(appState.getSelectedPlaceForViewDetails().getPlaceList().get(0));
+            }
             for (final Place selectedPlace : appState.getSelectedPlaceForViewDetails().getPlaceList()) {
-
+                minLeft = Math.min(minLeft, selectedPlace.getGeometry().getLocation().getLng());
+                maxRight = Math.max(maxRight, selectedPlace.getGeometry().getLocation().getLng());
+                minBottom = Math.min(minBottom, selectedPlace.getGeometry().getLocation().getLat());
+                maxTop = Math.max(maxTop, selectedPlace.getGeometry().getLocation().getLat());
                 new AsyncTask<String, Void, PlaceBitmapModel>() {
                     @Override
                     protected PlaceBitmapModel doInBackground(String... params) {
-                        return new PlaceBitmapModel(BitmapLoader.loadBitmap(selectedPlace.getIcon()),selectedPlace);
+                        return new PlaceBitmapModel(BitmapLoader.loadBitmap(selectedPlace.getIcon()), selectedPlace);
                     }
 
                     @Override
@@ -78,9 +78,9 @@ public class ShowAllPlacesOnMapActivity extends RoboMapActivity {
                         if (result.getBitmap() != null) {
                             GeoPoint geoPoint = new GeoPoint((int) (1E6 * result.getPlace().getGeometry().getLocation().getLat()), (int) (1E6 * selectedPlace.getGeometry().getLocation().getLng()));
                             mapView.getController().animateTo(geoPoint);
-                            mapView.getController().setZoom(15);
-
-                            BaloonOverlay<Place> baloonOverlay = new BaloonOverlay<Place>(scaleBitmap(result.getBitmap()),result.getPlace(),ShowAllPlacesOnMapActivity.this);
+                            PlaceOverlay baloonOverlay = new PlaceOverlay(scaleBitmap(result.getBitmap()), mapView, result.getPlace());
+                            baloonOverlay.setBalloonBottomOffset(50);
+                            baloonOverlay.setShowDisclosure(true);
                             OverlayItem overlayItem = new OverlayItem(geoPoint, result.getPlace().getName(), null);
                             baloonOverlay.addOverlay(overlayItem);
                             mapView.getOverlays().add(baloonOverlay);
@@ -88,27 +88,28 @@ public class ShowAllPlacesOnMapActivity extends RoboMapActivity {
                         }
                     }
                 }.execute();
-
             }
+            Log.i("left", minLeft + "");
+            Log.i("right", maxRight + "");
+            Log.i("top", maxTop + "");
+            Log.i("bottom", (maxRight - minLeft) + "");
+            Log.i("Max Distance longitude", (maxRight - minLeft) + "");
+            Log.i("Max Distance latitude", (maxTop - minBottom) + "");
+            mapView.getController().setZoom(15);
 
         }
     }
 
     private BaloonTapListener<Place> createBaloonListener() {
-      return new BaloonTapListener<Place>() {
-          @Override
-          public void onBaloonTapped(Place tapedValue) {
-              placeName.setText(tapedValue.getName());
-              placePhoneNumber.setText(tapedValue.getFormattedPhoneNumber());
-              if (tapedValue.getRating() != null) {
-                  placeRatingStars.setVisibility(View.VISIBLE);
-                  placeRatingStars.setRating(tapedValue.getRating());
-              }else{
-                  placeRatingStars.setVisibility(View.GONE);
-              }
-              placeType.setText(Joiner.on(", ").skipNulls().join(tapedValue.getTypes()));
-          }
-      };
+        return new BaloonTapListener<Place>() {
+            @Override
+            public void onBaloonTapped(Place tapedValue) {
+                showPlaceDetails(tapedValue);
+            }
+        };
+    }
+
+    private void showPlaceDetails(Place tapedValue) {
 
     }
 
