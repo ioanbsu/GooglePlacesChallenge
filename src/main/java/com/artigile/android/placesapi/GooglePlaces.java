@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -15,29 +14,25 @@ import android.view.View;
 import android.view.animation.*;
 import android.widget.*;
 import com.artigile.android.placesapi.api.model.Place;
-import com.artigile.android.placesapi.api.model.PlacesApiResponseEntity;
-import com.artigile.android.placesapi.api.service.GooglePlacesApiImpl;
-import com.artigile.android.placesapi.api.service.RankByType;
 import com.artigile.android.placesapi.app.LocationProvider;
 import com.artigile.android.placesapi.app.PlaceEfficientAdapter;
+import com.artigile.android.placesapi.app.PlacesSearchListener;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import roboguice.activity.RoboListActivity;
 import roboguice.inject.InjectView;
 
-import java.io.IOException;
-
 @Singleton
 public class GooglePlaces extends RoboListActivity implements SearchView.OnQueryTextListener {
 
     @Inject
-    private GooglePlacesApiImpl googlePlacesApi;
+    private LocationProvider locationProvider;
+
+    @Inject
+    private PlacesSearchService placesSearchService;
 
     @Inject
     private AppState appState;
-
-    @Inject
-    private LocationProvider locationProvider;
 
     @InjectView(android.R.id.list)
     private ListView listView;
@@ -59,7 +54,12 @@ public class GooglePlaces extends RoboListActivity implements SearchView.OnQuery
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                new PlacesDetailsDownloader().execute((Place) listView.getItemAtPosition(position));
+                placesSearchService.loadPlaceDetails((Place) listView.getItemAtPosition(position), new PlacesSearchListener() {
+                    @Override
+                    public void onResultReadyAndAppStateUpdated() {
+                        showMap();
+                    }
+                });
             }
         });
         listView.setLayoutAnimation(getListAnimation());
@@ -95,8 +95,8 @@ public class GooglePlaces extends RoboListActivity implements SearchView.OnQuery
         super.onPause();
     }
 
-    public void showAllOnMap(View view) {
-        appState.setSelectedPlaceForViewDetails(appState.getLastSearchResult());
+    public void showAllOnMap(MenuItem v) {
+        appState.setSelectedPlacesForViewDetails(appState.getLastSearchResult());
         showMap();
     }
 
@@ -110,8 +110,13 @@ public class GooglePlaces extends RoboListActivity implements SearchView.OnQuery
                 getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
-            new PlacesDownloader().execute(searchQuery);
-//            }
+            placesSearchService.searchPlaces(locationProvider, searchQuery, new PlacesSearchListener() {
+                @Override
+                public void onResultReadyAndAppStateUpdated() {
+                    mapSearchResultsToUi();
+                    progressBar.setVisibility(View.GONE);
+                }
+            });
         }
     }
 
@@ -144,55 +149,7 @@ public class GooglePlaces extends RoboListActivity implements SearchView.OnQuery
         overridePendingTransition(R.anim.zoom_enter, R.anim.zoom_exit);
     }
 
-    private class PlacesDetailsDownloader extends AsyncTask<Place, Void, String> {
-
-        @Override
-        protected String doInBackground(Place... params) {
-            try {
-                PlacesApiResponseEntity placesApiResponseEntity = googlePlacesApi.getPlaceDetails(getBaseContext().getString(R.string.api_key), params[0].getReference(), true, null);
-                appState.setSelectedPlaceForViewDetails(placesApiResponseEntity);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-            if (appState.getLastSearchResult() != null & appState.getLastSearchResult().getPlaceList() != null
-                    && !appState.getLastSearchResult().getPlaceList().isEmpty()) {
-                showMap();
-            }
-        }
-    }
-
-
-    private class PlacesDownloader extends AsyncTask<String, Void, String> {
-
-        @Override
-        protected String doInBackground(String... params) {
-            try {
-                String searchQuery = params == null ? null : params[0];
-                PlacesApiResponseEntity places = googlePlacesApi.searchNearBy(getBaseContext().getString(R.string.api_key),
-                        locationProvider.getLongitude(), locationProvider.getLatitude(), 1000, RankByType.PROMINENCE, true, searchQuery, null, null, null, null);
-                appState.setLastSearchResult(places);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(String aVoid) {
-            super.onPostExecute(aVoid);
-            mapSearchResultsToUi();
-            progressBar.setVisibility(View.GONE);
-        }
-    }
-
-
-    private LayoutAnimationController getListAnimation(){
+    private LayoutAnimationController getListAnimation() {
         AnimationSet set = new AnimationSet(true);
 
         Animation animation = new AlphaAnimation(0.0f, 1.0f);
@@ -200,8 +157,8 @@ public class GooglePlaces extends RoboListActivity implements SearchView.OnQuery
         set.addAnimation(animation);
 
         animation = new TranslateAnimation(
-                Animation.RELATIVE_TO_SELF, 0.0f,Animation.RELATIVE_TO_SELF, 0.0f,
-                Animation.RELATIVE_TO_SELF, -1.0f,Animation.RELATIVE_TO_SELF, 0.0f
+                Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF, 0.0f,
+                Animation.RELATIVE_TO_SELF, -1.0f, Animation.RELATIVE_TO_SELF, 0.0f
         );
         animation.setDuration(100);
         set.addAnimation(animation);

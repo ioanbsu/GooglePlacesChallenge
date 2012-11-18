@@ -8,4 +8,7 @@
     <string name="show_all_on_map">Show All On Map</string>
     <string name="search_near_me_enter">near me!</string>
     <string name="search_hint">Tap to filter search</string>
+    <string name="search_action_menu">Search</string>
+    <string name="map_action_menu">Map</string>
+    <string name="places_map_load_more">Load More</string>
 </resources>

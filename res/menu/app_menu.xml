@@ -5,8 +5,14 @@
           android:showAsAction="ifRoom|collapseActionView"
           android:actionViewClass="android.widget.SearchView" />
     <item android:id="@+id/searchAll"
-        android:title="Search"
+        android:title="@string/search_action_menu"
         android:showAsAction="always"
         android:onClick="doSearchAll"
+        />
+
+    <item android:id="@+id/searchAll"
+        android:title="@string/map_action_menu"
+        android:showAsAction="always"
+        android:onClick="showAllOnMap"
         />
 </menu>

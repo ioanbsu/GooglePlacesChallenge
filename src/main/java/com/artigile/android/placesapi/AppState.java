@@ -12,7 +12,7 @@ public class AppState {
 
     private PlacesApiResponseEntity lastSearchResult;
 
-    private PlacesApiResponseEntity selectedPlaceForViewDetails;
+    private PlacesApiResponseEntity selectedPlacesForViewDetails;
 
     public PlacesApiResponseEntity getLastSearchResult() {
         return lastSearchResult;
@@ -22,11 +22,11 @@ public class AppState {
         this.lastSearchResult = lastSearchResult;
     }
 
-    public PlacesApiResponseEntity getSelectedPlaceForViewDetails() {
-        return selectedPlaceForViewDetails;
+    public PlacesApiResponseEntity getSelectedPlacesForViewDetails() {
+        return selectedPlacesForViewDetails;
     }
 
-    public void setSelectedPlaceForViewDetails(PlacesApiResponseEntity selectedPlaceForViewDetails) {
-        this.selectedPlaceForViewDetails = selectedPlaceForViewDetails;
+    public void setSelectedPlacesForViewDetails(PlacesApiResponseEntity selectedPlacesForViewDetails) {
+        this.selectedPlacesForViewDetails = selectedPlacesForViewDetails;
     }
 }

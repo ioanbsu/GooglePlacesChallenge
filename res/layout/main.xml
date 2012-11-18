@@ -6,30 +6,6 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:measureAllChildren="false"
     android:orientation="vertical">
-
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top">
-
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:gravity="center_horizontal">
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:text="@string/show_all_on_map"
-                android:onClick="showAllOnMap"
-                android:id="@+id/showAllOnMap"/>
-        </LinearLayout>
-
-
-    </LinearLayout>
-
     <RelativeLayout
             android:layout_width="fill_parent"
             android:layout_height="fill_parent">

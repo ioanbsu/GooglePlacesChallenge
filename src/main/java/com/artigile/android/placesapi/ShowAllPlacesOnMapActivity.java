@@ -6,18 +6,15 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.RatingBar;
-import android.widget.TextView;
 import com.artigile.android.placesapi.api.model.Place;
 import com.artigile.android.placesapi.app.BaloonTapListener;
 import com.artigile.android.placesapi.app.BitmapLoader;
 import com.artigile.android.placesapi.app.PlaceOverlay;
+import com.artigile.android.placesapi.app.PlacesSearchListener;
 import com.artigile.android.placesapi.app.model.PlaceBitmapModel;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
 import com.google.android.maps.OverlayItem;
-import com.google.common.base.Joiner;
 import roboguice.activity.RoboMapActivity;
 import roboguice.inject.InjectView;
 
@@ -35,11 +32,15 @@ public class ShowAllPlacesOnMapActivity extends RoboMapActivity {
     @Inject
     private AppState appState;
 
+    @Inject
+    private PlacesSearchService placesSearchService;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.place_detailed_info);
     }
+
 
     @Override
     protected void onStart() {
@@ -50,18 +51,54 @@ public class ShowAllPlacesOnMapActivity extends RoboMapActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        displayAllPlacesFromSavedAppState();
+    }
+
+    @Override
+    protected boolean isRouteDisplayed() {
+        return false;
+    }
+
+    private BaloonTapListener<Place> createBaloonListener() {
+        return new BaloonTapListener<Place>() {
+            @Override
+            public void onBaloonTapped(Place tapedValue) {
+                showPlaceDetails(tapedValue);
+            }
+        };
+    }
+
+    private void showPlaceDetails(Place tapedValue) {
+        System.out.println("do nothing here....yet");
+    }
+
+    public void loadMorePlaces(View v) {
+        placesSearchService.loadMorePlaces(new PlacesSearchListener() {
+            @Override
+            public void onResultReadyAndAppStateUpdated() {
+                displayAllPlacesFromSavedAppState();
+            }
+        });
+    }
+
+    private BitmapDrawable scaleBitmap(Bitmap bitmap) {
+        Bitmap bitmapOrig = Bitmap.createScaledBitmap(bitmap, 30, 30, false);
+        return new BitmapDrawable(getResources(), bitmapOrig);
+    }
+
+    private void displayAllPlacesFromSavedAppState() {
         mapView.getOverlays().clear();
-        if (appState.getSelectedPlaceForViewDetails() != null
-                && appState.getSelectedPlaceForViewDetails().getPlaceList() != null
-                && !appState.getSelectedPlaceForViewDetails().getPlaceList().isEmpty()) {
+        if (appState.getSelectedPlacesForViewDetails() != null
+                && appState.getSelectedPlacesForViewDetails().getPlaceList() != null
+                && !appState.getSelectedPlacesForViewDetails().getPlaceList().isEmpty()) {
             float minLeft = Float.MAX_VALUE;
             float maxRight = Float.MIN_VALUE;
             float minBottom = Float.MAX_VALUE;
             float maxTop = Float.MIN_VALUE;
-            if (appState.getSelectedPlaceForViewDetails().getPlaceList().size() == 1) {
-                showPlaceDetails(appState.getSelectedPlaceForViewDetails().getPlaceList().get(0));
+            if (appState.getSelectedPlacesForViewDetails().getPlaceList().size() == 1) {
+                showPlaceDetails(appState.getSelectedPlacesForViewDetails().getPlaceList().get(0));
             }
-            for (final Place selectedPlace : appState.getSelectedPlaceForViewDetails().getPlaceList()) {
+            for (final Place selectedPlace : appState.getSelectedPlacesForViewDetails().getPlaceList()) {
                 minLeft = Math.min(minLeft, selectedPlace.getGeometry().getLocation().getLng());
                 maxRight = Math.max(maxRight, selectedPlace.getGeometry().getLocation().getLng());
                 minBottom = Math.min(minBottom, selectedPlace.getGeometry().getLocation().getLat());
@@ -98,28 +135,5 @@ public class ShowAllPlacesOnMapActivity extends RoboMapActivity {
             mapView.getController().setZoom(15);
 
         }
-    }
-
-    private BaloonTapListener<Place> createBaloonListener() {
-        return new BaloonTapListener<Place>() {
-            @Override
-            public void onBaloonTapped(Place tapedValue) {
-                showPlaceDetails(tapedValue);
-            }
-        };
-    }
-
-    private void showPlaceDetails(Place tapedValue) {
-
-    }
-
-    @Override
-    protected boolean isRouteDisplayed() {
-        return false;
-    }
-
-    private BitmapDrawable scaleBitmap(Bitmap bitmap) {
-        Bitmap bitmapOrig = Bitmap.createScaledBitmap(bitmap, 60, 60, false);
-        return new BitmapDrawable(getResources(), bitmapOrig);
     }
 }
