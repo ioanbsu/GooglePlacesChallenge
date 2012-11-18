@@ -1,4 +1,5 @@
 <RelativeLayout
+    android:id="@+id/mapRelativeLayout"
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
@@ -17,8 +18,8 @@
         android:layout_height="wrap_content"
         android:text="@string/places_map_load_more"
         android:id="@+id/loadMorePlaces"
-        android:layout_alignLeft="@+id/mapview"
-        android:layout_alignTop="@+id/mapview"
-        android:onClick="loadMorePlaces"/>
+        android:onClick="loadMorePlaces"
+        android:layout_alignRight="@+id/mapview"
+        android:layout_alignBottom="@+id/mapview"/>
 
 </RelativeLayout>

@@ -77,28 +77,30 @@ public class PlacesSearchService {
     }
 
     public void loadMorePlaces(final PlacesSearchListener placesSearchListener) {
-        new AsyncTask<String, Void, String>() {
-            @Override
-            protected String doInBackground(String... params) {
-                try {
-                    PlacesApiResponseEntity places = googlePlacesApi.searchNearBy(apiKey, -1, -1, null, null, true, null
-                            , null, null, null, appState.getLastSearchResult().getNextPageToken());
-                    appState.setLastSearchResult(places);
-                    appState.getSelectedPlacesForViewDetails().getPlaceList().addAll(places.getPlaceList());
-                    appState.getSelectedPlacesForViewDetails().setNextPageToken(places.getNextPageToken());
-                    appState.getSelectedPlacesForViewDetails().setHtmlAttribution(places.getHtmlAttribution());
-                    appState.getSelectedPlacesForViewDetails().setStatus(places.getStatus());
-                } catch (IOException e) {
-                    e.printStackTrace();
+        if (appState.getLastSearchResult().getNextPageToken() != null) {
+            new AsyncTask<String, Void, String>() {
+                @Override
+                protected String doInBackground(String... params) {
+                    try {
+                        PlacesApiResponseEntity places = googlePlacesApi.searchNearBy(apiKey, -1, -1, null, null, true, null
+                                , null, null, null, appState.getLastSearchResult().getNextPageToken());
+                        appState.setLastSearchResult(places);
+                        appState.getSelectedPlacesForViewDetails().getPlaceList().addAll(places.getPlaceList());
+                        appState.getSelectedPlacesForViewDetails().setNextPageToken(places.getNextPageToken());
+                        appState.getSelectedPlacesForViewDetails().setHtmlAttribution(places.getHtmlAttribution());
+                        appState.getSelectedPlacesForViewDetails().setStatus(places.getStatus());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    return null;
                 }
-                return null;
-            }
 
-            @Override
-            protected void onPostExecute(String aVoid) {
-                super.onPostExecute(aVoid);
-                placesSearchListener.onResultReadyAndAppStateUpdated();
-            }
-        }.execute();
+                @Override
+                protected void onPostExecute(String aVoid) {
+                    super.onPostExecute(aVoid);
+                    placesSearchListener.onResultReadyAndAppStateUpdated();
+                }
+            }.execute();
+        }
     }
 }
