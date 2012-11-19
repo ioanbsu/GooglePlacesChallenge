@@ -16,16 +16,6 @@
                 android:id="@android:id/list"
                 android:layout_gravity="center|top"
                 android:clickable="true"/>
-
-        <ProgressBar
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/placesSearchLoadingBar"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:indeterminate="true"
-                android:visibility="gone"/>
-
         <ImageView
             android:id="@+id/doSearchMainButton"
             android:layout_width="wrap_content"

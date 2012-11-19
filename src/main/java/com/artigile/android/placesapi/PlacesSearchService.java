@@ -20,7 +20,7 @@ import java.io.IOException;
 @Singleton
 public class PlacesSearchService {
 
-    public static final int MAX_ALLOWED_RADIUS = 50000;
+    public static final int MAX_ALLOWED_RADIUS = 5000;
     @Inject
     protected AppState appState;
     @Inject
@@ -54,6 +54,7 @@ public class PlacesSearchService {
     }
 
     public void searchPlaces(final LocationProvider locationProvider, final String searchQuery, final PlacesSearchListener placesSearchListener) {
+        appState.setFoundPlacesList(null);
         new AsyncTask<String, Void, PlacesApiResponseEntity>() {
             @Override
             protected PlacesApiResponseEntity doInBackground(String... params) {

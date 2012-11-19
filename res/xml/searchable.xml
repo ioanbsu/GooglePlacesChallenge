@@ -3,7 +3,7 @@
 <searchable xmlns:android="http://schemas.android.com/apk/res/android"
         android:label="@string/app_action_bar_title"
         android:hint="@string/search_hint"
-        android:imeOptions="actionDone"
+        android:imeOptions="actionSearch"
         android:queryAfterZeroResults="true"
         android:inputType="text"
         />

@@ -31,19 +31,19 @@ public abstract class AbstractPlacesUrlsBuilder implements PlacesUrlsBuilder {
             builder.appendQueryParameter("radius", radius + "");
         }
         if (rankBy != null) {
-            builder.appendQueryParameter("rankBy", rankBy + "");
+            builder.appendQueryParameter("rankBy", rankBy.toString().toLowerCase() + "");
         }
         if (keyword != null) {
-            builder.appendQueryParameter("keyword", Uri.encode(keyword));
+            builder.appendQueryParameter("keyword", keyword);
         }
         if (language != null) {
-            builder.appendQueryParameter("language", Uri.encode(language));
+            builder.appendQueryParameter("language", language);
         }
         if (name != null) {
-            builder.appendQueryParameter("name", Uri.encode(name));
+            builder.appendQueryParameter("name",name);
         }
         if (types != null) {
-            builder.appendQueryParameter("types", Uri.encode(Joiner.on("|").skipNulls().join(types)));
+            builder.appendQueryParameter("types",Joiner.on("|").skipNulls().join(types));
         }
         if (pageToken != null) {
             builder.appendQueryParameter("pagetoken", Uri.encode(pageToken));
@@ -57,16 +57,16 @@ public abstract class AbstractPlacesUrlsBuilder implements PlacesUrlsBuilder {
         Preconditions.checkNotNull(query, "Query parameter is required");
         Uri.Builder builder = Uri.parse(MessageFormat.format(TEXT_SEARCH_URL, type, key, Uri.encode(query), sensor)).buildUpon();
         if (location != null) {
-            builder.appendQueryParameter("location", Uri.encode(location));
+            builder.appendQueryParameter("location", location);
         }
         if (radius != null) {
-            builder.appendQueryParameter("radius", Uri.encode(radius));
+            builder.appendQueryParameter("radius", radius);
         }
         if (language != null) {
-            builder.appendQueryParameter("language", Uri.encode(language));
+            builder.appendQueryParameter("language", language);
         }
         if (types != null) {
-            builder.appendQueryParameter("types", Uri.encode((Joiner.on("|").skipNulls().join(types))));
+            builder.appendQueryParameter("types",(Joiner.on("|").skipNulls().join(types)));
         }
         return builder.toString();
     }

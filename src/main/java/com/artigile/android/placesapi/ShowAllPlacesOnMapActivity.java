@@ -113,6 +113,7 @@ public class ShowAllPlacesOnMapActivity extends RoboMapActivity {
 
     private void displayAllPlacesFromSavedAppState() {
         mapView.getOverlays().clear();
+        mapView.preLoad();
         if (appState.getSinglePlaceToDisplayOnMap() != null
                 && appState.getSinglePlaceToDisplayOnMap().getPlaceList() != null
                 && !appState.getSinglePlaceToDisplayOnMap().getPlaceList().isEmpty()) {
@@ -210,7 +211,7 @@ public class ShowAllPlacesOnMapActivity extends RoboMapActivity {
         Log.i("Max Distance longitude", (maxLon - minLon) + "");
         Log.i("Max Distance latitude", (maxLat - minLat) + "");
 
-        double fitFactor = 1.2;
+        double fitFactor = 1.1;
         mapView.getController().zoomToSpan((int) (Math.abs(maxLat - minLat) * fitFactor * 1E6), (int) (Math.abs(maxLon - minLon) * fitFactor * 1E6));
         mapView.getController().animateTo(new GeoPoint((int) (1E6 * (maxLat + minLat)) / 2,
                 (int) (1E6 * (maxLon + minLon)) / 2));

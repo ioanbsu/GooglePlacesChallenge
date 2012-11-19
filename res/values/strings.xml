@@ -4,6 +4,7 @@
     <string name="app_action_bar_title">Around ME</string>
     <string name="app_settings">Settings</string>
     <string name="search_textbox_hint">Enter search requirements</string>
+    <string name="search_button_label">Filter</string>
     <string name="search_by_location">Search by location</string>
     <string name="search_near_me">Search near me</string>
     <string name="show_all_on_map">Show All On Map</string>
@@ -14,6 +15,9 @@
     <string name="map_action_menu">Map</string>
     <string name="places_map_load_more">Load More</string>
     <string name="navigate_to_ballon_address">Navigate</string>
-    <string name="no_more_results_to_display_toast">No more results so far in this area. Try using different filter</string>
-    <string name="my_location_on_map_overlay_name">ME!!!</string>
+    <string name="no_more_results_to_display_toast">No more results so far in your area. Try using different filter</string>
+    <string name="my_location_on_map_overlay_name">ME!</string>
+    <string name="search_places_loading_window">Searching places, please wait...</string>
+    <string name="search_places_loading_window_loading_more">Loading more...</string>
+    <string name="search_places_loading_window_loading_even_more">Even more!!! :)</string>
 </resources>
