@@ -113,7 +113,6 @@ public class ShowAllPlacesOnMapActivity extends RoboMapActivity {
 
     private void displayAllPlacesFromSavedAppState() {
         mapView.getOverlays().clear();
-        mapView.preLoad();
         if (appState.getSinglePlaceToDisplayOnMap() != null
                 && appState.getSinglePlaceToDisplayOnMap().getPlaceList() != null
                 && !appState.getSinglePlaceToDisplayOnMap().getPlaceList().isEmpty()) {

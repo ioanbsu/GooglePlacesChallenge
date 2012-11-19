@@ -54,6 +54,9 @@ public class GooglePlaces extends RoboListActivity implements SearchView.OnQuery
         mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         createListView();
         createLoadingDialog();
+        if (locationProvider.getLocation().getLatitude() == 0 && locationProvider.getLocation().getLongitude() == 0) {
+            Toast.makeText(getBaseContext(),R.string.searching_gps_satellites_toast,2);
+        }
     }
 
 
@@ -149,7 +152,7 @@ public class GooglePlaces extends RoboListActivity implements SearchView.OnQuery
 
     private void doSearch(String searchQuery) {
         if (locationProvider.getLocation().getLatitude() == 0 && locationProvider.getLocation().getLongitude() == 0) {
-            Toast.makeText(getBaseContext(), "Please wait for the better GPS signal", 10).show();
+            Toast.makeText(getBaseContext(), R.string.search_please_wait_for_better_gps_signal, 10).show();
         } else {
             initPlacesEfficientAdapter();
             appState.setStartSearchButtonShow(false);

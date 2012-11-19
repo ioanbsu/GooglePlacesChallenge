@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.artigile.android</groupId>
     <artifactId>GooglePlacesChallenge</artifactId>
-    <version>1.0</version>
+    <version>1.1-SNAPSHOT</version>
 
     <packaging>apk</packaging>
     <name>Google Places API</name>

@@ -12,6 +12,7 @@
         <uses-library android:name="com.google.android.maps"/>
         <activity
             android:name=".GooglePlaces"
+            android:label="@string/app_action_bar_title"
             android:launchMode="singleTop">
             <meta-data
                     android:name="android.app.searchable"
