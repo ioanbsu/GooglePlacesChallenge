@@ -25,6 +25,16 @@
                 android:layout_centerVertical="true"
                 android:indeterminate="true"
                 android:visibility="gone"/>
+
+        <ImageView
+            android:id="@+id/doSearchMainButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:visibility="invisible"
+            android:onClick="doFirstSearch"
+            android:src="@drawable/my_location"/>
     </RelativeLayout>
 
 

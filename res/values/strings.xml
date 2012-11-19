@@ -9,7 +9,7 @@
     <string name="show_all_on_map">Show All On Map</string>
     <string name="search_near_me_enter">near me!</string>
     <string name="search_hint">Filter your search(e.g. "books")</string>
-    <string name="filter_search_button">Filter Search</string>
+    <string name="filter_search_button">Filtered Search</string>
     <string name="search_action_menu">Search All</string>
     <string name="map_action_menu">Map</string>
     <string name="places_map_load_more">Load More</string>

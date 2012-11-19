@@ -23,6 +23,10 @@ import com.google.inject.Singleton;
 import roboguice.activity.RoboListActivity;
 import roboguice.inject.InjectView;
 
+import static android.view.View.INVISIBLE;
+import static android.view.View.VISIBLE;
+import static android.widget.AbsListView.OnScrollListener;
+
 @Singleton
 public class GooglePlaces extends RoboListActivity implements SearchView.OnQueryTextListener {
 
@@ -38,6 +42,8 @@ public class GooglePlaces extends RoboListActivity implements SearchView.OnQuery
     private ProgressBar progressBar;
     @InjectView(R.id.searchResultsView)
     private LinearLayout searchResultsView;
+    @InjectView(R.id.doSearchMainButton)
+    private ImageView doSearchMainButton;
     private LocationManager mlocManager;
     private PlaceEfficientAdapter placeEfficientAdapter;
 
@@ -58,29 +64,13 @@ public class GooglePlaces extends RoboListActivity implements SearchView.OnQuery
             }
         });
         listView.setLayoutAnimation(getListAnimation());
-        listView.setOnScrollListener(new
-
-                                             AbsListView.OnScrollListener() {
-                                                 @Override
-                                                 public void onScrollStateChanged(AbsListView view, int scrollState) {
-
-                                                 }
-
-                                                 @Override
-                                                 public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                                                     if (totalItemCount > 0 && (visibleItemCount + firstVisibleItem) == totalItemCount) {
-                                                         if (!appState.isRequestIsInProgress()) {
-                                                             appState.setRequestIsInProgress(true);
-                                                             loadMorePlaces();
-                                                         }
-                                                     }
-                                                 }
-                                             });
+        listView.setOnScrollListener(initScrollListener());
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        doSearchMainButton.setVisibility(appState.isStartSearchButtonShow() ? VISIBLE : INVISIBLE);
         initPlacesEfficientAdapter();
         if (appState.getFoundPlacesList() != null && appState.getFoundPlacesList().getPlaceList() != null) {
             placeEfficientAdapter.clear();
@@ -117,7 +107,7 @@ public class GooglePlaces extends RoboListActivity implements SearchView.OnQuery
     }
 
     private void loadMorePlaces() {
-        progressBar.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(VISIBLE);
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
@@ -125,7 +115,7 @@ public class GooglePlaces extends RoboListActivity implements SearchView.OnQuery
                 @Override
                 public void onResultReadyAndAppStateUpdated(PlacesApiResponseEntity placesApiResponseEntity) {
                     if (placesApiResponseEntity == null) {
-                        Toast.makeText(getBaseContext(), R.string.no_more_results_to_display_toast, 2).show();
+                        //  Toast.makeText(getBaseContext(), R.string.no_more_results_to_display_toast, 1).show();
                     } else {
                         if (placesApiResponseEntity.getPlaceList() != null) {
                             placeEfficientAdapter.addAll(placesApiResponseEntity.getPlaceList());
@@ -142,34 +132,37 @@ public class GooglePlaces extends RoboListActivity implements SearchView.OnQuery
     }
 
     private void doSearch(String searchQuery) {
-    /*    if (locationProvider.getLatitude() == 0 && locationProvider.getLongitude() == 0) {
-            Toast.makeText(getBaseContext(),"Please wait for the better GPS signal",10).show();
-        } else {*/
-        initPlacesEfficientAdapter();
-        ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-        if (networkInfo != null && networkInfo.isConnected()) {
-            progressBar.setVisibility(View.VISIBLE);
-            appState.setRequestIsInProgress(true);
-            searchResultsView.scrollTo(0,0);
-            appState.setRequestIsInProgress(false);
-            placesSearchService.searchPlaces(locationProvider, searchQuery, new PlacesSearchListener() {
-                @Override
-                public void onResultReadyAndAppStateUpdated(PlacesApiResponseEntity placesApiResponseEntity) {
-                    placeEfficientAdapter.clear();
-                    if (placesApiResponseEntity.getPlaceList() != null) {
-                        placeEfficientAdapter.addAll(placesApiResponseEntity.getPlaceList());
-                    }
-                    progressBar.setVisibility(View.GONE);
-                }
-            });
+        if (locationProvider.getLocation().getLatitude() == 0 && locationProvider.getLocation().getLongitude() == 0) {
+            Toast.makeText(getBaseContext(), "Please wait for the better GPS signal", 10).show();
         } else {
-            progressBar.setVisibility(View.GONE);
+            initPlacesEfficientAdapter();
+            appState.setStartSearchButtonShow(false);
+            doSearchMainButton.setVisibility(INVISIBLE);
+            ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+            if (networkInfo != null && networkInfo.isConnected()) {
+                progressBar.setVisibility(VISIBLE);
+                appState.setRequestIsInProgress(true);
+                searchResultsView.scrollTo(0, 0);
+                appState.setRequestIsInProgress(false);
+                placesSearchService.searchPlaces(locationProvider, searchQuery, new PlacesSearchListener() {
+                    @Override
+                    public void onResultReadyAndAppStateUpdated(PlacesApiResponseEntity placesApiResponseEntity) {
+                        placeEfficientAdapter.clear();
+                        if (placesApiResponseEntity.getPlaceList() != null) {
+                            placeEfficientAdapter.addAll(placesApiResponseEntity.getPlaceList());
+                        }
+                        progressBar.setVisibility(View.GONE);
+                    }
+                });
+            } else {
+                progressBar.setVisibility(View.GONE);
+            }
         }
     }
 
     private void initPlacesEfficientAdapter() {
-        if (placeEfficientAdapter == null) {
+        if (placeEfficientAdapter == null&&locationProvider.getLocation().getLatitude()!=0&&locationProvider.getLocation().getLongitude()!=0) {
             placeEfficientAdapter = new PlaceEfficientAdapter(getBaseContext(), locationProvider.getLocation());
             listView.setAdapter(placeEfficientAdapter);
         }
@@ -184,6 +177,10 @@ public class GooglePlaces extends RoboListActivity implements SearchView.OnQuery
     @Override
     public boolean onQueryTextChange(String newText) {
         return false;
+    }
+
+    public void doFirstSearch(View v) {
+        doSearch("");
     }
 
     public void doSearchAll(MenuItem v) {
@@ -214,5 +211,23 @@ public class GooglePlaces extends RoboListActivity implements SearchView.OnQuery
         return controller;
     }
 
+    private OnScrollListener initScrollListener() {
+        return new OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                if (totalItemCount > 0 && (visibleItemCount + firstVisibleItem) == totalItemCount) {
+                    if (!appState.isRequestIsInProgress()) {
+                        appState.setRequestIsInProgress(true);
+                        loadMorePlaces();
+                    }
+                }
+            }
+        };
+    }
 }
 

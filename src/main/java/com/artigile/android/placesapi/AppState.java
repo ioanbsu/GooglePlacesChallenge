@@ -18,6 +18,8 @@ public class AppState {
 
     private boolean requestIsInProgress;
 
+    private boolean startSearchButtonShow=true;
+
     public PlacesApiResponseEntity getLastSearchResult() {
         return lastSearchResult;
     }
@@ -48,5 +50,13 @@ public class AppState {
 
     public void setRequestIsInProgress(boolean requestIsInProgress) {
         this.requestIsInProgress = requestIsInProgress;
+    }
+
+    public boolean isStartSearchButtonShow() {
+        return startSearchButtonShow;
+    }
+
+    public void setStartSearchButtonShow(boolean startSearchButtonShow) {
+        this.startSearchButtonShow = startSearchButtonShow;
     }
 }
