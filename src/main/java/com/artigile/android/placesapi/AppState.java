@@ -16,6 +16,8 @@ public class AppState {
 
     private PlacesApiResponseEntity foundPlacesList;
 
+    private boolean requestIsInProgress;
+
     public PlacesApiResponseEntity getLastSearchResult() {
         return lastSearchResult;
     }
@@ -40,4 +42,11 @@ public class AppState {
         this.foundPlacesList = foundPlacesList;
     }
 
+    public boolean isRequestIsInProgress() {
+        return requestIsInProgress;
+    }
+
+    public void setRequestIsInProgress(boolean requestIsInProgress) {
+        this.requestIsInProgress = requestIsInProgress;
+    }
 }

@@ -59,9 +59,8 @@ public class PlacesSearchService {
             protected PlacesApiResponseEntity doInBackground(String... params) {
                 try {
                     RankByType rankByType = Strings.isNullOrEmpty(searchQuery) ? RankByType.PROMINENCE : RankByType.DISTANCE;
-                    PlacesApiResponseEntity places = googlePlacesApi.searchNearBy(apiKey,
+                    return googlePlacesApi.searchNearBy(apiKey,
                             locationProvider.getLocation().getLongitude(), locationProvider.getLocation().getLatitude(), MAX_ALLOWED_RADIUS, rankByType, true, searchQuery, null, null, null, null);
-                    return places;
 
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -85,9 +84,8 @@ public class PlacesSearchService {
                 @Override
                 protected PlacesApiResponseEntity doInBackground(String... params) {
                     try {
-                        PlacesApiResponseEntity places = googlePlacesApi.searchNearBy(apiKey, -1, -1, null, null, true, null
+                        return googlePlacesApi.searchNearBy(apiKey, -1, -1, null, null, true, null
                                 , null, null, null, appState.getLastSearchResult().getNextPageToken());
-                        return places;
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

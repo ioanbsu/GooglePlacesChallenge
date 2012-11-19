@@ -21,7 +21,6 @@ import java.util.List;
  */
 public class PlaceEfficientAdapter extends ArrayAdapter<Place> {
     private LayoutInflater mInflater;
-    private Bitmap mIcon1;
     private Location myLocation;
 
     private DecimalFormat milesFormat=new DecimalFormat( "#,###,###,##0.00" );
@@ -42,7 +41,7 @@ public class PlaceEfficientAdapter extends ArrayAdapter<Place> {
      * @see android.widget.ListAdapter#getView(int, android.view.View,
      *      android.view.ViewGroup)
      */
-    public View getView(final int position, View convertView, ViewGroup parent) {
+    public View getView(int position, View convertView, ViewGroup parent) {
         // A ViewHolder keeps references to children views to avoid unneccessary calls
         // to findViewById() on each row.
         final ViewHolder holder;
@@ -70,16 +69,15 @@ public class PlaceEfficientAdapter extends ArrayAdapter<Place> {
         new AsyncTask<String, Void, Bitmap>() {
             @Override
             protected Bitmap doInBackground(String... params) {
-                return BitmapLoader.loadBitmap((getItem(position)).getIcon());
+                return BitmapLoader.loadBitmap(params[0]);
             }
 
             @Override
             protected void onPostExecute(Bitmap s) {
                 super.onPostExecute(s);
-                mIcon1 = s;
-                holder.icon.setImageBitmap(mIcon1);
+                holder.icon.setImageBitmap(s);
             }
-        }.execute();
+        }.execute(getItem(position).getIcon());
 
         Location loc = new Location("");
         loc.setLatitude(getItem(position).getGeometry().getLocation().getLat());

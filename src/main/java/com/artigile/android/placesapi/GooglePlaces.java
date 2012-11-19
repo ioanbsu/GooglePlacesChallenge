@@ -69,7 +69,10 @@ public class GooglePlaces extends RoboListActivity implements SearchView.OnQuery
                                                  @Override
                                                  public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
                                                      if (totalItemCount > 0 && (visibleItemCount + firstVisibleItem) == totalItemCount) {
-                                                         loadMorePlaces();
+                                                         if (!appState.isRequestIsInProgress()) {
+                                                             appState.setRequestIsInProgress(true);
+                                                             loadMorePlaces();
+                                                         }
                                                      }
                                                  }
                                              });
@@ -78,8 +81,9 @@ public class GooglePlaces extends RoboListActivity implements SearchView.OnQuery
     @Override
     protected void onResume() {
         super.onResume();
-        if (appState.getFoundPlacesList() != null) {
-            initPlacesEfficientAdapter();
+        initPlacesEfficientAdapter();
+        if (appState.getFoundPlacesList() != null && appState.getFoundPlacesList().getPlaceList() != null) {
+            placeEfficientAdapter.clear();
             placeEfficientAdapter.addAll(appState.getFoundPlacesList().getPlaceList());
         }
         mlocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationProvider);
@@ -121,16 +125,18 @@ public class GooglePlaces extends RoboListActivity implements SearchView.OnQuery
                 @Override
                 public void onResultReadyAndAppStateUpdated(PlacesApiResponseEntity placesApiResponseEntity) {
                     if (placesApiResponseEntity == null) {
-                        Toast.makeText(getBaseContext(), R.string.no_more_results_to_display_toast, 4).show();
+                        Toast.makeText(getBaseContext(), R.string.no_more_results_to_display_toast, 2).show();
                     } else {
                         if (placesApiResponseEntity.getPlaceList() != null) {
                             placeEfficientAdapter.addAll(placesApiResponseEntity.getPlaceList());
                         }
                     }
                     progressBar.setVisibility(View.GONE);
+                    appState.setRequestIsInProgress(false);
                 }
             });
         } else {
+            appState.setRequestIsInProgress(false);
             progressBar.setVisibility(View.GONE);
         }
     }
@@ -140,15 +146,18 @@ public class GooglePlaces extends RoboListActivity implements SearchView.OnQuery
             Toast.makeText(getBaseContext(),"Please wait for the better GPS signal",10).show();
         } else {*/
         initPlacesEfficientAdapter();
-        progressBar.setVisibility(View.VISIBLE);
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
+            progressBar.setVisibility(View.VISIBLE);
+            appState.setRequestIsInProgress(true);
+            searchResultsView.scrollTo(0,0);
+            appState.setRequestIsInProgress(false);
             placesSearchService.searchPlaces(locationProvider, searchQuery, new PlacesSearchListener() {
                 @Override
                 public void onResultReadyAndAppStateUpdated(PlacesApiResponseEntity placesApiResponseEntity) {
+                    placeEfficientAdapter.clear();
                     if (placesApiResponseEntity.getPlaceList() != null) {
-                        placeEfficientAdapter.clear();
                         placeEfficientAdapter.addAll(placesApiResponseEntity.getPlaceList());
                     }
                     progressBar.setVisibility(View.GONE);
