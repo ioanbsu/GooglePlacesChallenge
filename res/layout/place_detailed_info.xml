@@ -22,4 +22,24 @@
         android:layout_alignRight="@+id/mapview"
         android:layout_alignBottom="@+id/mapview"/>
 
+    <ImageButton
+        android:layout_width="48dp"
+        android:layout_height="96dp"
+        android:id="@+id/imageButton"
+        android:src="@drawable/my_location"
+        android:onClick="centerOnMyLocation"
+        android:scaleType="fitCenter"
+        android:layout_toLeftOf="@+id/loadMorePlaces"
+        android:layout_alignBottom="@+id/mapview"
+        android:layout_alignTop="@+id/loadMorePlaces"/>
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/loadingMoreResults"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:indeterminate="true"
+        android:visibility="invisible"/>
+
 </RelativeLayout>

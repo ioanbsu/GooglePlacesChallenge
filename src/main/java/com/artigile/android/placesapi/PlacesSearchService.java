@@ -7,6 +7,7 @@ import com.artigile.android.placesapi.api.service.GooglePlacesApiImpl;
 import com.artigile.android.placesapi.api.service.RankByType;
 import com.artigile.android.placesapi.app.LocationProvider;
 import com.artigile.android.placesapi.app.PlacesSearchListener;
+import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import roboguice.inject.InjectResource;
 
@@ -19,24 +20,21 @@ import java.io.IOException;
 @Singleton
 public class PlacesSearchService {
 
-    @Inject
-    private GooglePlacesApiImpl googlePlacesApi;
-
+    public static final int MAX_ALLOWED_RADIUS = 50000;
     @Inject
     protected AppState appState;
-
+    @Inject
+    private GooglePlacesApiImpl googlePlacesApi;
     @InjectResource(R.string.api_key)
     private String apiKey;
 
-
     public void loadPlaceDetails(Place place, final PlacesSearchListener placesSearchListener) {
-        new AsyncTask<Place, Void, String>() {
+        new AsyncTask<Place, Void, PlacesApiResponseEntity>() {
 
             @Override
-            protected String doInBackground(Place... params) {
+            protected PlacesApiResponseEntity doInBackground(Place... params) {
                 try {
-                    PlacesApiResponseEntity placesApiResponseEntity = googlePlacesApi.getPlaceDetails(apiKey, params[0].getReference(), true, null);
-                    appState.setSelectedPlacesForViewDetails(placesApiResponseEntity);
+                    return googlePlacesApi.getPlaceDetails(apiKey, params[0].getReference(), true, null);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -44,24 +42,27 @@ public class PlacesSearchService {
             }
 
             @Override
-            protected void onPostExecute(String result) {
+            protected void onPostExecute(PlacesApiResponseEntity result) {
                 super.onPostExecute(result);
                 if (appState.getLastSearchResult() != null & appState.getLastSearchResult().getPlaceList() != null
                         && !appState.getLastSearchResult().getPlaceList().isEmpty()) {
-                    placesSearchListener.onResultReadyAndAppStateUpdated();
+                    appState.setSinglePlaceToDisplayOnMap(result);
+                    placesSearchListener.onResultReadyAndAppStateUpdated(result);
                 }
             }
         }.execute(place);
     }
 
     public void searchPlaces(final LocationProvider locationProvider, final String searchQuery, final PlacesSearchListener placesSearchListener) {
-        new AsyncTask<String, Void, String>() {
+        new AsyncTask<String, Void, PlacesApiResponseEntity>() {
             @Override
-            protected String doInBackground(String... params) {
+            protected PlacesApiResponseEntity doInBackground(String... params) {
                 try {
+                    RankByType rankByType = Strings.isNullOrEmpty(searchQuery) ? RankByType.PROMINENCE : RankByType.DISTANCE;
                     PlacesApiResponseEntity places = googlePlacesApi.searchNearBy(apiKey,
-                            locationProvider.getLongitude(), locationProvider.getLatitude(), 1000, RankByType.PROMINENCE, true, searchQuery, null, null, null, null);
-                    appState.setLastSearchResult(places);
+                            locationProvider.getLocation().getLongitude(), locationProvider.getLocation().getLatitude(), MAX_ALLOWED_RADIUS, rankByType, true, searchQuery, null, null, null, null);
+                    return places;
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -69,26 +70,24 @@ public class PlacesSearchService {
             }
 
             @Override
-            protected void onPostExecute(String aVoid) {
-                super.onPostExecute(aVoid);
-                placesSearchListener.onResultReadyAndAppStateUpdated();
+            protected void onPostExecute(PlacesApiResponseEntity place) {
+                super.onPostExecute(place);
+                appState.setLastSearchResult(place);
+                appState.setFoundPlacesList(place);
+                placesSearchListener.onResultReadyAndAppStateUpdated(place);
             }
         }.execute();
     }
 
     public void loadMorePlaces(final PlacesSearchListener placesSearchListener) {
         if (appState.getLastSearchResult().getNextPageToken() != null) {
-            new AsyncTask<String, Void, String>() {
+            new AsyncTask<String, Void, PlacesApiResponseEntity>() {
                 @Override
-                protected String doInBackground(String... params) {
+                protected PlacesApiResponseEntity doInBackground(String... params) {
                     try {
                         PlacesApiResponseEntity places = googlePlacesApi.searchNearBy(apiKey, -1, -1, null, null, true, null
                                 , null, null, null, appState.getLastSearchResult().getNextPageToken());
-                        appState.setLastSearchResult(places);
-                        appState.getSelectedPlacesForViewDetails().getPlaceList().addAll(places.getPlaceList());
-                        appState.getSelectedPlacesForViewDetails().setNextPageToken(places.getNextPageToken());
-                        appState.getSelectedPlacesForViewDetails().setHtmlAttribution(places.getHtmlAttribution());
-                        appState.getSelectedPlacesForViewDetails().setStatus(places.getStatus());
+                        return places;
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -96,11 +95,29 @@ public class PlacesSearchService {
                 }
 
                 @Override
-                protected void onPostExecute(String aVoid) {
-                    super.onPostExecute(aVoid);
-                    placesSearchListener.onResultReadyAndAppStateUpdated();
+                protected void onPostExecute(PlacesApiResponseEntity places) {
+                    super.onPostExecute(places);
+                    appState.setLastSearchResult(places);
+                    if (appState.getFoundPlacesList() == null) {
+                        appState.setFoundPlacesList(places);
+                    } else {
+                        appendSearchResultAndMapWithNextPageResult(appState.getFoundPlacesList(), places);
+                    }
+                    placesSearchListener.onResultReadyAndAppStateUpdated(places);
                 }
             }.execute();
+        } else {
+            placesSearchListener.onResultReadyAndAppStateUpdated(null);
         }
+    }
+
+    private void appendSearchResultAndMapWithNextPageResult(PlacesApiResponseEntity appStatePlacesEntity, PlacesApiResponseEntity places) {
+        if (appStatePlacesEntity == null || places.getPlaceList() == null) {
+            return;
+        }
+        appStatePlacesEntity.getPlaceList().addAll(places.getPlaceList());
+        appStatePlacesEntity.setNextPageToken(places.getNextPageToken());
+        appStatePlacesEntity.setHtmlAttribution(places.getHtmlAttribution());
+        appStatePlacesEntity.setStatus(places.getStatus());
     }
 }

@@ -1,6 +1,8 @@
 package com.artigile.android.placesapi.app;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -23,13 +25,16 @@ public class BalloonOverlayView<Item extends OverlayItem> extends FrameLayout {
     private TextView title;
     private TextView snippet;
     private RatingBar placeRating;
+    private TextView navigate;
+    private Place baloonPlace;
+
 
     /**
      * Create a new BalloonOverlayView.
      *
-     * @param context - The activity context.
+     * @param context             - The activity context.
      * @param balloonBottomOffset - The bottom padding (in pixels) to be applied
-     * when rendering this view.
+     *                            when rendering this view.
      */
     public BalloonOverlayView(Context context, int balloonBottomOffset) {
 
@@ -55,16 +60,24 @@ public class BalloonOverlayView<Item extends OverlayItem> extends FrameLayout {
      * to provide a custom view/layout for the balloon.
      *
      * @param context - The activity context.
-     * @param parent - The root layout into which you must inflate your view.
+     * @param parent  - The root layout into which you must inflate your view.
      */
-    protected void setupView(Context context, final ViewGroup parent) {
+    protected void setupView(final Context context, final ViewGroup parent) {
 
         LayoutInflater inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View v = inflater.inflate(R.layout.map_balloon, parent);
         title = (TextView) v.findViewById(R.id.balloon_item_title);
         snippet = (TextView) v.findViewById(R.id.balloon_item_snippet);
+        navigate = (TextView) v.findViewById(R.id.navigateToPlace);
         placeRating = (RatingBar) v.findViewById(R.id.placeRating);
+        navigate.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse("google.navigation:q=" + baloonPlace.getVicinity()));
+                context.startActivity(intent);
+            }
+        });
 
     }
 
@@ -74,6 +87,7 @@ public class BalloonOverlayView<Item extends OverlayItem> extends FrameLayout {
      * @param selectedPlace - The overlay item containing the relevant view data.
      */
     public void setData(Place selectedPlace) {
+        this.baloonPlace = selectedPlace;
         layout.setVisibility(VISIBLE);
         setBalloonData(selectedPlace, layout);
     }
@@ -83,7 +97,7 @@ public class BalloonOverlayView<Item extends OverlayItem> extends FrameLayout {
      * your own data/view mappings.
      *
      * @param selectedPlace - The overlay item containing the relevant view data.
-     * @param parent - The parent layout for this BalloonOverlayView.
+     * @param parent        - The parent layout for this BalloonOverlayView.
      */
     protected void setBalloonData(Place selectedPlace, ViewGroup parent) {
         if (selectedPlace.getName() != null) {
@@ -93,16 +107,18 @@ public class BalloonOverlayView<Item extends OverlayItem> extends FrameLayout {
             title.setText("");
             title.setVisibility(GONE);
         }
-        if (selectedPlace.getVicinity()!= null) {
+        if (selectedPlace.getVicinity() != null) {
             snippet.setVisibility(VISIBLE);
             snippet.setText(selectedPlace.getVicinity());
+            navigate.setVisibility(VISIBLE);
         } else {
             snippet.setText("");
             snippet.setVisibility(GONE);
+            navigate.setVisibility(GONE);
         }
-        if(selectedPlace.getRating()!=null){
+        if (selectedPlace.getRating() != null) {
             placeRating.setRating(selectedPlace.getRating());
-        }else{
+        } else {
             placeRating.setVisibility(GONE);
         }
     }
@@ -125,7 +141,7 @@ public class BalloonOverlayView<Item extends OverlayItem> extends FrameLayout {
         protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
             int mode = MeasureSpec.getMode(widthMeasureSpec);
             int measuredWidth = MeasureSpec.getSize(widthMeasureSpec);
-            int adjustedMaxWidth = (int)(MAX_WIDTH_DP * SCALE + 0.5f);
+            int adjustedMaxWidth = (int) (MAX_WIDTH_DP * SCALE + 0.5f);
             int adjustedWidth = Math.min(measuredWidth, adjustedMaxWidth);
             int adjustedWidthMeasureSpec = MeasureSpec.makeMeasureSpec(adjustedWidth, mode);
             super.onMeasure(adjustedWidthMeasureSpec, heightMeasureSpec);

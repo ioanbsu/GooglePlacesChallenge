@@ -2,24 +2,52 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="wrap_content"
               android:layout_height="fill_parent"
-              android:padding="5dp"
+              android:minHeight="60dp"
+              android:padding="5dp">
 
-        >
-
-    <ImageView
-        android:id="@+id/placeInListLogo"
-        android:layout_width="50px"
-        android:layout_height="50px"
-        android:layout_marginLeft="5px"
-        android:layout_marginRight="20px"
-        android:layout_marginTop="5px">
+    <ImageView android:id="@+id/placeInListLogo"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="5dp">
     </ImageView>
 
-    <TextView
-        android:id="@+id/placeInListDetails"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="30px" >
-    </TextView>
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+        <TextView
+            android:id="@+id/placeInListDetails"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20dp" >
+        </TextView>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+
+            <RatingBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/searchResultsListRating"
+                android:numStars="5"
+                android:rating="0"
+                android:stepSize="0.5"
+                style="@android:style/Widget.DeviceDefault.Light.RatingBar.Small"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12dp"
+                android:paddingLeft="20dp"
+                android:id="@+id/distanceToPlaceInSearchResList"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
 
 </LinearLayout>

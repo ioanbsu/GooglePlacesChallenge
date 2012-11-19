@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/searchView"
-          android:title="@string/search_hint"
-          android:showAsAction="ifRoom|collapseActionView"
+          android:title="@string/filter_search_button"
+          android:showAsAction="always|collapseActionView"
           android:actionViewClass="android.widget.SearchView" />
     <item android:id="@+id/searchAll"
         android:title="@string/search_action_menu"
@@ -10,7 +10,7 @@
         android:onClick="doSearchAll"
         />
 
-    <item android:id="@+id/searchAll"
+    <item android:id="@+id/showAllOnMap"
         android:title="@string/map_action_menu"
         android:showAsAction="always"
         android:onClick="showAllOnMap"

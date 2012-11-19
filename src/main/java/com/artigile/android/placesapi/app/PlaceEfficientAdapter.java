@@ -2,16 +2,16 @@ package com.artigile.android.placesapi.app;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.widget.*;
 import com.artigile.android.placesapi.R;
 import com.artigile.android.placesapi.api.model.Place;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 /**
@@ -19,50 +19,22 @@ import java.util.List;
  * Date: 11/16/12
  * Time: 4:16 PM
  */
-public class PlaceEfficientAdapter extends BaseAdapter {
+public class PlaceEfficientAdapter extends ArrayAdapter<Place> {
     private LayoutInflater mInflater;
     private Bitmap mIcon1;
-    private final List<Place> DATA;
+    private Location myLocation;
 
+    private DecimalFormat milesFormat=new DecimalFormat( "#,###,###,##0.00" );
 
-    public PlaceEfficientAdapter(Context context, List<Place> DATA) {
+    public PlaceEfficientAdapter(Context context, Location myLocation) {
+        super(context, R.layout.list_place);
         // Cache the LayoutInflate to avoid asking for a new one each time.
-        this.DATA = DATA;
+        this.myLocation = myLocation;
         mInflater = LayoutInflater.from(context);
         //   mIcon1 = BitmapFactory.decodeResource(context.getResources(), R.drawable.icon);
 
     }
 
-    /**
-     * The number of items in the list is determined by the number of speeches
-     * in our array.
-     *
-     * @see android.widget.ListAdapter#getCount()
-     */
-    public int getCount() {
-        return DATA.size();
-    }
-
-    /**
-     * Since the data comes from an array, just returning the index is
-     * sufficent to get at the data. If we were using a more complex data
-     * structure, we would return whatever object represents one row in the
-     * list.
-     *
-     * @see android.widget.ListAdapter#getItem(int)
-     */
-    public Object getItem(int position) {
-        return DATA.get(position);
-    }
-
-    /**
-     * Use the array index as a unique id.
-     *
-     * @see android.widget.ListAdapter#getItemId(int)
-     */
-    public long getItemId(int position) {
-        return position;
-    }
 
     /**
      * Make a view to hold each row.
@@ -85,6 +57,8 @@ public class PlaceEfficientAdapter extends BaseAdapter {
             // we want to bind data to.
             holder = new ViewHolder();
             holder.text = (TextView) convertView.findViewById(R.id.placeInListDetails);
+            holder.distanceToPlace = (TextView) convertView.findViewById(R.id.distanceToPlaceInSearchResList);
+            holder.placeRating = (RatingBar) convertView.findViewById(R.id.searchResultsListRating);
             holder.icon = (ImageView) convertView.findViewById(R.id.placeInListLogo);
 
             convertView.setTag(holder);
@@ -96,7 +70,7 @@ public class PlaceEfficientAdapter extends BaseAdapter {
         new AsyncTask<String, Void, Bitmap>() {
             @Override
             protected Bitmap doInBackground(String... params) {
-                return BitmapLoader.loadBitmap(((Place) getItem(position)).getIcon());
+                return BitmapLoader.loadBitmap((getItem(position)).getIcon());
             }
 
             @Override
@@ -107,12 +81,26 @@ public class PlaceEfficientAdapter extends BaseAdapter {
             }
         }.execute();
 
-        holder.text.setText(DATA.get(position).getName());
+        Location loc = new Location("");
+        loc.setLatitude(getItem(position).getGeometry().getLocation().getLat());
+        loc.setLongitude(getItem(position).getGeometry().getLocation().getLng());
+        loc.distanceTo(myLocation);
+        holder.distanceToPlace.setText(milesFormat.format(loc.distanceTo(myLocation) * 0.000621371) + " mi.");
+        holder.text.setText(getItem(position).getName());
+
+        if (getItem(position).getRating() != null) {
+            holder.placeRating.setVisibility(View.VISIBLE);
+            holder.placeRating.setRating(getItem(position).getRating());
+        } else {
+            holder.placeRating.setVisibility(View.INVISIBLE);
+        }
         return convertView;
     }
 
     static class ViewHolder {
         TextView text;
+        TextView distanceToPlace;
+        RatingBar placeRating;
         ImageView icon;
     }
 

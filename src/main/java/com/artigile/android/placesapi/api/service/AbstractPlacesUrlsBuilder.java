@@ -21,8 +21,10 @@ public abstract class AbstractPlacesUrlsBuilder implements PlacesUrlsBuilder {
     protected String buildSearchNearBy(String type, String key, double longitude, double latitude, Integer radius, RankByType rankBy, boolean sensor,
                                        String keyword, String language, String name, Set<String> types, String pageToken) {
         Preconditions.checkNotNull(key, "Key parameter is required");
+/*
         Preconditions.checkArgument(!(rankBy != null && rankBy == RankByType.DISTANCE && radius != null)
                 , "Radius option can not be specified when rankBy value is [distance].");
+*/
 
         Uri.Builder builder = Uri.parse(MessageFormat.format(NEARBY_SEARCH_URL, type, key, latitude + "," + longitude, sensor)).buildUpon();
         if (radius != null) {

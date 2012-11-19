@@ -12,7 +12,9 @@ public class AppState {
 
     private PlacesApiResponseEntity lastSearchResult;
 
-    private PlacesApiResponseEntity selectedPlacesForViewDetails;
+    private PlacesApiResponseEntity singlePlaceToDisplayOnMap;
+
+    private PlacesApiResponseEntity foundPlacesList;
 
     public PlacesApiResponseEntity getLastSearchResult() {
         return lastSearchResult;
@@ -22,11 +24,20 @@ public class AppState {
         this.lastSearchResult = lastSearchResult;
     }
 
-    public PlacesApiResponseEntity getSelectedPlacesForViewDetails() {
-        return selectedPlacesForViewDetails;
+    public PlacesApiResponseEntity getSinglePlaceToDisplayOnMap() {
+        return singlePlaceToDisplayOnMap;
     }
 
-    public void setSelectedPlacesForViewDetails(PlacesApiResponseEntity selectedPlacesForViewDetails) {
-        this.selectedPlacesForViewDetails = selectedPlacesForViewDetails;
+    public void setSinglePlaceToDisplayOnMap(PlacesApiResponseEntity singlePlaceToDisplayOnMap) {
+        this.singlePlaceToDisplayOnMap = singlePlaceToDisplayOnMap;
     }
+
+    public PlacesApiResponseEntity getFoundPlacesList() {
+        return foundPlacesList;
+    }
+
+    public void setFoundPlacesList(PlacesApiResponseEntity foundPlacesList) {
+        this.foundPlacesList = foundPlacesList;
+    }
+
 }

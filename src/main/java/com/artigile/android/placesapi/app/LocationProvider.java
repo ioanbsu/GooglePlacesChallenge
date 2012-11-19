@@ -3,7 +3,6 @@ package com.artigile.android.placesapi.app;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
-import android.widget.Toast;
 
 import javax.inject.Singleton;
 
@@ -15,15 +14,11 @@ import javax.inject.Singleton;
 @Singleton
 public class LocationProvider implements LocationListener {
 
-
-    private double longitude;
-    private double latitude;
+    private Location location=new Location("");
 
     @Override
     public void onLocationChanged(Location location) {
-        longitude = location.getLongitude();
-        latitude = location.getLatitude();
-
+        this.location = location;
     }
 
     @Override
@@ -37,25 +32,16 @@ public class LocationProvider implements LocationListener {
 
     }
 
-
     @Override
     public void onProviderEnabled(String provider) {
 
     }
 
-    public double getLongitude() {
-        return longitude;
+    public Location getLocation() {
+        return location;
     }
 
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
-    }
-
-    public double getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
+    public void setLocation(Location location) {
+        this.location = location;
     }
 }
