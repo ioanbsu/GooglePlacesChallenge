@@ -25,12 +25,14 @@ import roboguice.activity.RoboMapActivity;
 import roboguice.inject.InjectView;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.List;
 
 /**
  * @author IoaN, 11/14/12 7:38 PM
  */
-public class ShowAllPlacesOnMapActivity extends RoboMapActivity {
+@Singleton
+public class MapResultsActivity extends RoboMapActivity {
 
 
     @InjectView(R.id.mapview)
@@ -49,7 +51,7 @@ public class ShowAllPlacesOnMapActivity extends RoboMapActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.place_detailed_info);
+        setContentView(R.layout.map_view);
         mapView.getController().setZoom(15);
     }
 

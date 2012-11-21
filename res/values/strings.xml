@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Around ME</string>
-    <string name="app_action_bar_title">Around ME</string>
+    <string name="app_name">All Around ME</string>
+    <string name="app_action_bar_title">All Around ME</string>
     <string name="app_settings">Settings</string>
     <string name="search_textbox_hint">Enter search requirements</string>
     <string name="search_button_label">Filter</string>

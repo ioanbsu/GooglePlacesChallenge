@@ -21,6 +21,7 @@ import com.artigile.android.aroundme.app.PlaceEfficientAdapter;
 import com.artigile.android.aroundme.app.PlacesSearchListener;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import roboguice.activity.RoboFragmentActivity;
 import roboguice.activity.RoboListActivity;
 import roboguice.inject.InjectView;
 
@@ -50,7 +51,7 @@ public class GooglePlaces extends RoboListActivity implements SearchView.OnQuery
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
+        setContentView(R.layout.search_results);
         mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         createListView();
         createLoadingDialog();
@@ -212,7 +213,7 @@ public class GooglePlaces extends RoboListActivity implements SearchView.OnQuery
 
 
     private void showMap() {
-        Intent intent = new Intent(getBaseContext(), ShowAllPlacesOnMapActivity.class);
+        Intent intent = new Intent(getBaseContext(), MapResultsActivity.class);
         startActivity(intent);
         overridePendingTransition(R.anim.zoom_enter, R.anim.zoom_exit);
     }

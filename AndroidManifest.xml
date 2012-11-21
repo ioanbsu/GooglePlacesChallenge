@@ -24,7 +24,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ShowAllPlacesOnMapActivity"
+            android:name=".MapResultsActivity"
             android:launchMode="standard"
             android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen">
         </activity>
