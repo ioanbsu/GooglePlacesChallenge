@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+        <fragment
+            android:name="com.artigile.android.aroundme.app.fragment.SearchResultFragment"
+            android:id="@+id/searchResultsFragment"
+            android:layout_weight="1"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"/>
+
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/doSearchMainButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:visibility="invisible"
+        android:onClick="doFirstSearch"
+        android:contentDescription="@string/search_places_loading_window"
+        android:src="@drawable/my_location"/>
+</RelativeLayout>

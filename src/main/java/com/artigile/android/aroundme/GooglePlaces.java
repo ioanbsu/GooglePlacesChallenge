@@ -14,15 +14,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.*;
 import android.widget.*;
-import com.artigile.android.aroundme.api.model.Place;
 import com.artigile.android.aroundme.api.model.PlacesApiResponseEntity;
 import com.artigile.android.aroundme.app.LocationProvider;
 import com.artigile.android.aroundme.app.PlaceEfficientAdapter;
 import com.artigile.android.aroundme.app.PlacesSearchListener;
+import com.artigile.android.aroundme.app.fragment.PlaceDetailsFragment;
+import com.artigile.android.aroundme.app.fragment.SearchResultFragment;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import roboguice.activity.RoboFragmentActivity;
-import roboguice.activity.RoboListActivity;
+import roboguice.inject.InjectFragment;
 import roboguice.inject.InjectView;
 
 import static android.view.View.INVISIBLE;
@@ -30,7 +31,7 @@ import static android.view.View.VISIBLE;
 import static android.widget.AbsListView.OnScrollListener;
 
 @Singleton
-public class GooglePlaces extends RoboListActivity implements SearchView.OnQueryTextListener {
+public class GooglePlaces extends RoboFragmentActivity implements SearchView.OnQueryTextListener {
 
     @Inject
     private LocationProvider locationProvider;
@@ -38,8 +39,10 @@ public class GooglePlaces extends RoboListActivity implements SearchView.OnQuery
     private PlacesSearchService placesSearchService;
     @Inject
     private AppState appState;
-    @InjectView(android.R.id.list)
-    private ListView listView;
+    @InjectFragment(R.id.searchResultsFragment)
+    private SearchResultFragment searchResultFragment;
+    @InjectFragment(R.id.selectedPlaceDetailsFragment)
+    private PlaceDetailsFragment selectedPlaceDetailsFragment;
     @InjectView(R.id.searchResultsView)
     private LinearLayout searchResultsView;
     @InjectView(R.id.doSearchMainButton)
@@ -51,15 +54,14 @@ public class GooglePlaces extends RoboListActivity implements SearchView.OnQuery
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.search_results);
+        setContentView(R.layout.search_results_page);
         mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         createListView();
         createLoadingDialog();
         if (locationProvider.getLocation().getLatitude() == 0 && locationProvider.getLocation().getLongitude() == 0) {
-            Toast.makeText(getBaseContext(),R.string.searching_gps_satellites_toast,2);
+            Toast.makeText(getBaseContext(), R.string.searching_gps_satellites_toast, 2);
         }
     }
-
 
     @Override
     protected void onResume() {
@@ -100,24 +102,9 @@ public class GooglePlaces extends RoboListActivity implements SearchView.OnQuery
         showMap();
     }
 
-
-    @Override
-    public boolean onQueryTextSubmit(String query) {
-        doSearch(query);
-        return false;
-    }
-
     @Override
     public boolean onQueryTextChange(String newText) {
         return false;
-    }
-
-    public void doFirstSearch(View v) {
-        doSearch("");
-    }
-
-    public void doSearchAll(MenuItem v) {
-        doSearch("");
     }
 
     private void loadMorePlaces() {
@@ -151,41 +138,32 @@ public class GooglePlaces extends RoboListActivity implements SearchView.OnQuery
         }
     }
 
-    private void doSearch(String searchQuery) {
-        if (locationProvider.getLocation().getLatitude() == 0 && locationProvider.getLocation().getLongitude() == 0) {
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        doSearch(query);
+        return false;
+    }
+
+    public void doFirstSearch(View v) {
+        doSearch("");
+    }
+
+    public void doSearchAll(MenuItem v) {
+        doSearch("");
+    }
+
+    private void doSearch(String query) {
+        if (!searchResultFragment.doSearch(query)) {
             Toast.makeText(getBaseContext(), R.string.search_please_wait_for_better_gps_signal, 10).show();
         } else {
-            initPlacesEfficientAdapter();
-            appState.setStartSearchButtonShow(false);
             doSearchMainButton.setVisibility(INVISIBLE);
-            ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-            if (networkInfo != null && networkInfo.isConnected()) {
-                showLoading(getBaseContext().getString(R.string.search_places_loading_window));
-                appState.setRequestIsInProgress(true);
-                searchResultsView.scrollTo(0, 0);
-                appState.setRequestIsInProgress(false);
-                placeEfficientAdapter.clear();
-                placesSearchService.searchPlaces(locationProvider, searchQuery, new PlacesSearchListener() {
-                    @Override
-                    public void onResultReadyAndAppStateUpdated(PlacesApiResponseEntity placesApiResponseEntity) {
-                        if (placesApiResponseEntity.getPlaceList() != null) {
-                            placeEfficientAdapter.addAll(placesApiResponseEntity.getPlaceList());
-                            searchResultsView.animate();
-                        }
-                        loadingDialog.hide();
-                    }
-                });
-            } else {
-                loadingDialog.hide();
-            }
         }
     }
 
     private void initPlacesEfficientAdapter() {
-        if (placeEfficientAdapter == null&&locationProvider.getLocation().getLatitude()!=0&&locationProvider.getLocation().getLongitude()!=0) {
+        if (placeEfficientAdapter == null && locationProvider.getLocation().getLatitude() != 0 && locationProvider.getLocation().getLongitude() != 0) {
             placeEfficientAdapter = new PlaceEfficientAdapter(getBaseContext(), locationProvider.getLocation());
-            listView.setAdapter(placeEfficientAdapter);
+            //listView.setAdapter(placeEfficientAdapter);
         }
     }
 
@@ -196,7 +174,7 @@ public class GooglePlaces extends RoboListActivity implements SearchView.OnQuery
     }
 
     private void createListView() {
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+      /*  listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 placesSearchService.loadPlaceDetails((Place) listView.getItemAtPosition(position), new PlacesSearchListener() {
@@ -208,9 +186,8 @@ public class GooglePlaces extends RoboListActivity implements SearchView.OnQuery
             }
         });
         listView.setLayoutAnimation(getListAnimation());
-        listView.setOnScrollListener(initScrollListener());
+        listView.setOnScrollListener(initScrollListener());*/
     }
-
 
     private void showMap() {
         Intent intent = new Intent(getBaseContext(), MapResultsActivity.class);

@@ -20,6 +20,10 @@
             <id>google-api-services</id>
             <url>http://google-api-client-libraries.appspot.com/mavenrepo</url>
         </repository>
+        <repository>
+            <id>sonatype-repo</id>
+            <url>https://oss.sonatype.org/content/repositories</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -31,9 +35,10 @@
         </dependency>
         <dependency>
             <groupId>com.google.android</groupId>
-            <artifactId>android-support</artifactId>
-            <version>r4</version>
+            <artifactId>support-v4</artifactId>
+            <version>r7</version>
         </dependency>
+
         <dependency>
             <groupId>com.google.inject</groupId>
             <artifactId>guice</artifactId>
@@ -43,7 +48,7 @@
         <dependency>
             <groupId>org.roboguice</groupId>
             <artifactId>roboguice</artifactId>
-            <version>2.0b4</version>
+            <version>2.0</version>
         </dependency>
 
         <dependency>

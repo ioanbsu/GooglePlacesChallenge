@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent">
+<!--    //
+    // formatted address        5604 Bay Street, Emeryville, CA, United States
+    //formatted phone            (510) 547-0905
+    //   name     Barnes & Noble
+    //  opening hours
+    //   reviews
+    //    rating
+    //    type
+    //    website-->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/placeDetailsName"
+        android:layout_gravity="center"
+        android:textSize="25dp"/>
+
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="left|center_vertical"
+        android:padding="40dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Address:"
+            android:id="@+id/textView2"
+            android:layout_row="0"
+            android:layout_column="0"
+            android:textSize="20dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Web Page:"
+            android:id="@+id/textView2"
+            android:layout_row="1"
+            android:layout_column="0"
+            android:textSize="20dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/placeDetailsAddress"
+            android:layout_row="0"
+            android:layout_column="1"
+            android:textSize="20dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/placeDetailsWebAddress"
+            android:layout_row="1"
+            android:layout_column="1"
+            android:textSize="20dp"/>
+
+    </GridLayout>
+</LinearLayout>

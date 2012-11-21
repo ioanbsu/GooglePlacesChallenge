@@ -21,8 +21,7 @@ import java.text.DecimalFormat;
 public class PlaceEfficientAdapter extends ArrayAdapter<Place> {
     private LayoutInflater mInflater;
     private Location myLocation;
-
-    private DecimalFormat milesFormat=new DecimalFormat( "#,###,###,##0.00" );
+    private DecimalFormat milesFormat = new DecimalFormat("#,###,###,##0.00");
 
     public PlaceEfficientAdapter(Context context, Location myLocation) {
         super(context, R.layout.list_place);
@@ -32,7 +31,6 @@ public class PlaceEfficientAdapter extends ArrayAdapter<Place> {
         //   mIcon1 = BitmapFactory.decodeResource(context.getResources(), R.drawable.icon);
 
     }
-
 
     /**
      * Make a view to hold each row.
@@ -90,6 +88,11 @@ public class PlaceEfficientAdapter extends ArrayAdapter<Place> {
             holder.placeRating.setRating(getItem(position).getRating());
         } else {
             holder.placeRating.setVisibility(View.INVISIBLE);
+        }
+        if (((ListView) parent).getCheckedItemPosition() == position) {
+            convertView.setBackgroundResource(android.R.color.holo_blue_dark);
+        }  else{
+            convertView.setBackgroundResource(android.R.color.black);
         }
         return convertView;
     }
