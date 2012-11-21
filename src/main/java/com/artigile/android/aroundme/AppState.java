@@ -1,5 +1,6 @@
 package com.artigile.android.aroundme;
 
+import com.artigile.android.aroundme.api.model.Place;
 import com.artigile.android.aroundme.api.model.PlacesApiResponseEntity;
 
 import javax.inject.Singleton;
@@ -15,6 +16,8 @@ public class AppState {
     private PlacesApiResponseEntity singlePlaceToDisplayOnMap;
 
     private PlacesApiResponseEntity foundPlacesList;
+
+    private Place lastSelectedPlaceDetails;
 
     private boolean requestIsInProgress;
 
@@ -58,5 +61,13 @@ public class AppState {
 
     public void setStartSearchButtonShow(boolean startSearchButtonShow) {
         this.startSearchButtonShow = startSearchButtonShow;
+    }
+
+    public Place getLastSelectedPlaceDetails() {
+        return lastSelectedPlaceDetails;
+    }
+
+    public void setLastSelectedPlaceDetails(Place lastSelectedPlaceDetails) {
+        this.lastSelectedPlaceDetails = lastSelectedPlaceDetails;
     }
 }

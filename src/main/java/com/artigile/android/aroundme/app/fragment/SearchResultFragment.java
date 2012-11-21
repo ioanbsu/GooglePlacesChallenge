@@ -24,6 +24,7 @@ import com.artigile.android.aroundme.app.LocationProvider;
 import com.artigile.android.aroundme.app.PlaceEfficientAdapter;
 import com.artigile.android.aroundme.app.PlacesSearchListener;
 import com.artigile.android.aroundme.app.event.PlaceSelectedEvent;
+import com.google.common.base.Objects;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import roboguice.fragment.RoboListFragment;
@@ -70,9 +71,12 @@ public class SearchResultFragment extends RoboListFragment {
         if (appState.getFoundPlacesList() != null && appState.getFoundPlacesList().getPlaceList() != null) {
             placeEfficientAdapter.clear();
             placeEfficientAdapter.addAll(appState.getFoundPlacesList().getPlaceList());
+            for (Place place : appState.getFoundPlacesList().getPlaceList()) {
+                if (Objects.equal(place.getId(),appState.getLastSelectedPlaceDetails().getId())) {
+                    getListView().setItemChecked(appState.getFoundPlacesList().getPlaceList().indexOf(place), true);
+                }
+            }
         }
-
-
     }
 
     private void createListView() {
@@ -88,18 +92,18 @@ public class SearchResultFragment extends RoboListFragment {
 
     @Override
     public void onListItemClick(ListView l, View v,final int position, long id) {
-        placesSearchService.loadPlaceDetails((Place) getListView().getItemAtPosition(position), new PlacesSearchListener() {
-            @Override
-            public void onResultReadyAndAppStateUpdated(PlacesApiResponseEntity placesApiResponseEntity) {
-                View selectedPlaceDetailsLandscapeView = getActivity().findViewById(R.id.selectedPlaceDetailsFragment);
-                if (selectedPlaceDetailsLandscapeView != null && selectedPlaceDetailsLandscapeView.getVisibility() == View.VISIBLE) {
-                    getListView().setItemChecked(position, true);
-                    eventBus.post(new PlaceSelectedEvent(placesApiResponseEntity.getPlaceList().get(0)));
-                } else {
+        View selectedPlaceDetailsLandscapeView = getActivity().findViewById(R.id.selectedPlaceDetailsFragment);
+        if (selectedPlaceDetailsLandscapeView != null && selectedPlaceDetailsLandscapeView.getVisibility() == View.VISIBLE) {
+            getListView().setItemChecked(position, true);
+            eventBus.post(new PlaceSelectedEvent((Place) getListView().getItemAtPosition(position)));
+        } else {
+            placesSearchService.loadPlaceDetails((Place) getListView().getItemAtPosition(position), new PlacesSearchListener() {
+                @Override
+                public void onResultReadyAndAppStateUpdated(PlacesApiResponseEntity placesApiResponseEntity) {
                     showMap();
                 }
-            }
-        });
+            });
+        }
     }
 
     private void showMap() {

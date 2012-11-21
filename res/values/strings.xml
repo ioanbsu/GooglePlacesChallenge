@@ -22,4 +22,5 @@
     <string name="search_places_loading_window_loading_even_more">Even more!!! :)</string>
     <string name="search_please_wait_for_better_gps_signal">Please wait for the better GPS signal</string>
     <string name="searching_gps_satellites_toast">Searching GPS satellites, please wait...</string>
+    <string name="place_details_fragment_select_place_label"><![CDATA[<-Select a place]]></string>
 </resources>

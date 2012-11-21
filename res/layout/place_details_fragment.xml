@@ -1,18 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="fill_parent"
-              android:layout_height="fill_parent">
-<!--    //
-    // formatted address        5604 Bay Street, Emeryville, CA, United States
-    //formatted phone            (510) 547-0905
-    //   name     Barnes & Noble
-    //  opening hours
-    //   reviews
-    //    rating
-    //    type
-    //    website-->
+    <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/placeDetailsFragmentProgressBar"
+            android:layout_centerInParent="true"
+            android:visibility="invisible"/>
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/placeDetailsFragmentSelectPlaceLabel"
+            android:layout_centerInParent="true"
+            android:text="@string/place_details_fragment_select_place_label"
+            android:visibility="invisible"
+            android:textSize="50dp"/>
+
+    <LinearLayout
+            android:id="@+id/placeDetailsFragmentMainPanel"
+            android:orientation="vertical"
+            android:visibility="invisible"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        <!--    //
+            // formatted address        5604 Bay Street, Emeryville, CA, United States
+            //formatted phone            (510) 547-0905
+            //   name     Barnes & Noble
+            //  opening hours
+            //   reviews
+            //    rating
+            //    type
+            //    website-->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -62,3 +83,4 @@
 
     </GridLayout>
 </LinearLayout>
+</RelativeLayout>

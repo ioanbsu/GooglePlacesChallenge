@@ -7,7 +7,9 @@ import com.artigile.android.aroundme.api.service.GooglePlacesApiImpl;
 import com.artigile.android.aroundme.api.service.RankByType;
 import com.artigile.android.aroundme.app.LocationProvider;
 import com.artigile.android.aroundme.app.PlacesSearchListener;
+import com.artigile.android.aroundme.app.event.PlacesSearchResultsAvailableEvent;
 import com.google.common.base.Strings;
+import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import roboguice.inject.InjectResource;
 
@@ -27,6 +29,8 @@ public class PlacesSearchService {
     private GooglePlacesApiImpl googlePlacesApi;
     @InjectResource(R.string.api_key)
     private String apiKey;
+    @Inject
+    private EventBus eventBus;
 
     public void loadPlaceDetails(Place place, final PlacesSearchListener placesSearchListener) {
         new AsyncTask<Place, Void, PlacesApiResponseEntity>() {
@@ -60,8 +64,9 @@ public class PlacesSearchService {
             protected PlacesApiResponseEntity doInBackground(String... params) {
                 try {
                     RankByType rankByType = Strings.isNullOrEmpty(searchQuery) ? RankByType.PROMINENCE : RankByType.DISTANCE;
-                    return googlePlacesApi.searchNearBy(apiKey,
+                    PlacesApiResponseEntity placesApiResponseEntity = googlePlacesApi.searchNearBy(apiKey,
                             locationProvider.getLocation().getLongitude(), locationProvider.getLocation().getLatitude(), MAX_ALLOWED_RADIUS, rankByType, true, searchQuery, null, null, null, null);
+                    return placesApiResponseEntity;
 
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -74,6 +79,7 @@ public class PlacesSearchService {
                 super.onPostExecute(place);
                 appState.setLastSearchResult(place);
                 appState.setFoundPlacesList(place);
+                eventBus.post(new PlacesSearchResultsAvailableEvent());
                 placesSearchListener.onResultReadyAndAppStateUpdated(place);
             }
         }.execute();
