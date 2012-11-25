@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -13,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.Toast;
 import com.artigile.android.aroundme.app.LocationProvider;
+import com.artigile.android.aroundme.app.fragment.PlaceDetailsFragment;
 import com.artigile.android.aroundme.app.fragment.SearchResultFragment;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -93,6 +95,8 @@ public class GooglePlaces extends RoboFragmentActivity implements SearchView.OnQ
     }
 
     private void doSearch(String query) {
+        DisplayMetrics displaymetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
         if (!searchResultFragment.doSearch(query)) {
             Toast.makeText(getBaseContext(), R.string.search_please_wait_for_better_gps_signal, 10).show();
         } else {

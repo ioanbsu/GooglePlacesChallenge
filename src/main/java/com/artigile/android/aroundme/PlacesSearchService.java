@@ -32,7 +32,10 @@ public class PlacesSearchService {
     @Inject
     private EventBus eventBus;
 
+    private boolean isQueued=false;
+
     public void loadPlaceDetails(Place place, final PlacesSearchListener placesSearchListener) {
+        isQueued=true;
         new AsyncTask<Place, Void, PlacesApiResponseEntity>() {
 
             @Override
@@ -47,6 +50,7 @@ public class PlacesSearchService {
 
             @Override
             protected void onPostExecute(PlacesApiResponseEntity result) {
+                isQueued=false;
                 super.onPostExecute(result);
                 if (appState.getLastSearchResult() != null & appState.getLastSearchResult().getPlaceList() != null
                         && !appState.getLastSearchResult().getPlaceList().isEmpty()) {
@@ -58,6 +62,7 @@ public class PlacesSearchService {
     }
 
     public void searchPlaces(final LocationProvider locationProvider, final String searchQuery, final PlacesSearchListener placesSearchListener) {
+        isQueued=true;
         appState.setFoundPlacesList(null);
         new AsyncTask<String, Void, PlacesApiResponseEntity>() {
             @Override
@@ -76,7 +81,7 @@ public class PlacesSearchService {
 
             @Override
             protected void onPostExecute(PlacesApiResponseEntity place) {
-                super.onPostExecute(place);
+                isQueued=false;
                 appState.setLastSearchResult(place);
                 appState.setFoundPlacesList(place);
                 eventBus.post(new PlacesSearchResultsAvailableEvent());
@@ -86,6 +91,7 @@ public class PlacesSearchService {
     }
 
     public void loadMorePlaces(final PlacesSearchListener placesSearchListener) {
+        isQueued=true;
         if (appState.getLastSearchResult().getNextPageToken() != null) {
             new AsyncTask<String, Void, PlacesApiResponseEntity>() {
                 @Override
@@ -101,7 +107,7 @@ public class PlacesSearchService {
 
                 @Override
                 protected void onPostExecute(PlacesApiResponseEntity places) {
-                    super.onPostExecute(places);
+                    isQueued=false;
                     appState.setLastSearchResult(places);
                     if (appState.getFoundPlacesList() == null) {
                         appState.setFoundPlacesList(places);
@@ -114,6 +120,10 @@ public class PlacesSearchService {
         } else {
             placesSearchListener.onResultReadyAndAppStateUpdated(null);
         }
+    }
+
+    public boolean isQueued() {
+        return isQueued;
     }
 
     private void appendSearchResultAndMapWithNextPageResult(PlacesApiResponseEntity appStatePlacesEntity, PlacesApiResponseEntity places) {

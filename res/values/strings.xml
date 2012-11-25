@@ -23,4 +23,14 @@
     <string name="search_please_wait_for_better_gps_signal">Please wait for the better GPS signal</string>
     <string name="searching_gps_satellites_toast">Searching GPS satellites, please wait...</string>
     <string name="place_details_fragment_select_place_label"><![CDATA[<-Select a place]]></string>
+    <string name="place_details_address_title">Address:</string>
+    <string name="place_details_web_page">Web Page:</string>
+    <string name="place_details_phone">Phone:</string>
+    <string name="place_details_place_type">Place type:</string>
+    <string name="place_details_navigate">Navigate</string>
+    <string name="place_details_map">Map</string>
+    <string name="place_details_reviews_title">Reviews:</string>
+    <string name="place_details_no_reviews">no reviews available for this place</string>
+    <string name="place_details_empty_label">(empty)</string>
+    <string name="place_details_loading_label">loading...</string>
 </resources>
