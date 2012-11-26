@@ -15,6 +15,7 @@
     <string name="map_action_menu">Map</string>
     <string name="places_map_load_more">Load More</string>
     <string name="navigate_to_ballon_address">Navigate</string>
+    <string name="balloon_place_details">Place details</string>
     <string name="no_more_results_to_display_toast">No more results so far in your area. Try using different filter</string>
     <string name="my_location_on_map_overlay_name">ME!</string>
     <string name="search_places_loading_window">Searching places, please wait...</string>

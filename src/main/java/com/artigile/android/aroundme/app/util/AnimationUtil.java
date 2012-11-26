@@ -1,4 +1,4 @@
-package com.artigile.android.aroundme.app;
+package com.artigile.android.aroundme.app.util;
 
 import android.view.animation.*;
 

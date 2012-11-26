@@ -16,6 +16,7 @@ import com.artigile.android.aroundme.api.model.PlacesApiResponseEntity;
 import com.artigile.android.aroundme.app.PlacesSearchListener;
 import com.artigile.android.aroundme.app.event.PlaceSelectedEvent;
 import com.artigile.android.aroundme.app.event.PlacesSearchResultsAvailableEvent;
+import com.artigile.android.aroundme.app.util.UiUtil;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;

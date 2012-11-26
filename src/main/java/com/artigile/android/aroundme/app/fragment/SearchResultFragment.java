@@ -18,11 +18,12 @@ import com.artigile.android.aroundme.PlacesSearchService;
 import com.artigile.android.aroundme.R;
 import com.artigile.android.aroundme.api.model.Place;
 import com.artigile.android.aroundme.api.model.PlacesApiResponseEntity;
-import com.artigile.android.aroundme.app.AnimationUtil;
+import com.artigile.android.aroundme.app.util.AnimationUtil;
 import com.artigile.android.aroundme.app.LocationProvider;
 import com.artigile.android.aroundme.app.PlaceEfficientAdapter;
 import com.artigile.android.aroundme.app.PlacesSearchListener;
 import com.artigile.android.aroundme.app.event.PlaceSelectedEvent;
+import com.artigile.android.aroundme.app.util.UiUtil;
 import com.google.common.base.Objects;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
@@ -113,7 +114,7 @@ public class SearchResultFragment extends RoboListFragment {
         if (selectedPlaceDetailsLandscapeView != null && selectedPlaceDetailsLandscapeView.getVisibility() == View.VISIBLE) {
             getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         } else {
-            getListView().setChoiceMode(ListView.CHOICE_MODE_NONE);
+
         }
     }
 

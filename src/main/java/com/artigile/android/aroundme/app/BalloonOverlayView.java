@@ -12,9 +12,13 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import com.artigile.android.aroundme.AppState;
+import com.artigile.android.aroundme.MapResultsActivity;
+import com.artigile.android.aroundme.PlaceDetailsActivity;
 import com.artigile.android.aroundme.R;
 import com.artigile.android.aroundme.api.model.Place;
 import com.google.android.maps.OverlayItem;
+import roboguice.RoboGuice;
 
 /**
  * @author IoaN, 11/17/12 5:52 PM
@@ -26,8 +30,8 @@ public class BalloonOverlayView<Item extends OverlayItem> extends FrameLayout {
     private TextView snippet;
     private RatingBar placeRating;
     private TextView navigate;
+    private TextView balloonPlaceDetails;
     private Place baloonPlace;
-
 
     /**
      * Create a new BalloonOverlayView.
@@ -71,10 +75,19 @@ public class BalloonOverlayView<Item extends OverlayItem> extends FrameLayout {
         snippet = (TextView) v.findViewById(R.id.balloon_item_snippet);
         navigate = (TextView) v.findViewById(R.id.navigateToPlace);
         placeRating = (RatingBar) v.findViewById(R.id.placeRating);
+        balloonPlaceDetails=(TextView)v.findViewById(R.id.balloonPlaceDetails);
         navigate.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse("google.navigation:q=" + baloonPlace.getVicinity()));
+                context.startActivity(intent);
+            }
+        });
+        balloonPlaceDetails.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                RoboGuice.getInjector(context).getInstance(AppState.class).setLastSelectedPlaceDetails(baloonPlace);
+                Intent intent = new Intent(context, PlaceDetailsActivity.class);
                 context.startActivity(intent);
             }
         });

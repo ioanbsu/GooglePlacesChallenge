@@ -1,4 +1,4 @@
-package com.artigile.android.aroundme.app.fragment;
+package com.artigile.android.aroundme.app.util;
 
 import android.content.Context;
 import android.content.Intent;
