@@ -74,6 +74,11 @@ public class MapResultsActivity extends RoboMapActivity {
             });
         } else {
             Toast.makeText(getBaseContext(), R.string.no_more_results_to_display_toast, 10).show();
+            mapView.removeAllViews();
+            mapView.getOverlays().clear();
+            mapView.removeAllViewsInLayout();
+            displayMapOverlays(appState.getFoundPlacesList().getPlaceList());
+            displayMyLocationOnMap();
         }
     }
 
@@ -125,6 +130,10 @@ public class MapResultsActivity extends RoboMapActivity {
                 && !appState.getFoundPlacesList().getPlaceList().isEmpty()) {
             displayMapOverlays(appState.getFoundPlacesList().getPlaceList());
         }
+        displayMyLocationOnMap();
+    }
+
+    private void displayMyLocationOnMap() {
         GeoPoint geoPoint = new GeoPoint((int) (1E6 * locationProvider.getLocation().getLatitude()),
                 (int) (1E6 * locationProvider.getLocation().getLongitude()));
         Place place = new Place();

@@ -1,7 +1,9 @@
 package com.artigile.android.aroundme.app.fragment;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -18,13 +20,14 @@ import com.artigile.android.aroundme.PlacesSearchService;
 import com.artigile.android.aroundme.R;
 import com.artigile.android.aroundme.api.model.Place;
 import com.artigile.android.aroundme.api.model.PlacesApiResponseEntity;
-import com.artigile.android.aroundme.app.util.AnimationUtil;
 import com.artigile.android.aroundme.app.LocationProvider;
 import com.artigile.android.aroundme.app.PlaceEfficientAdapter;
 import com.artigile.android.aroundme.app.PlacesSearchListener;
 import com.artigile.android.aroundme.app.event.PlaceSelectedEvent;
+import com.artigile.android.aroundme.app.util.AnimationUtil;
 import com.artigile.android.aroundme.app.util.UiUtil;
 import com.google.common.base.Objects;
+import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 import roboguice.fragment.RoboListFragment;
@@ -69,7 +72,7 @@ public class SearchResultFragment extends RoboListFragment {
 
     private void initOnResume() {
         createLoadingDialog();
-        if (placesSearchService.isQueued()) {
+        /*if (placesSearchService.isQueued()) {
             showLoading(context.getString(R.string.search_places_loading_window));
             new AsyncTask<Void, Void, Void>() {
                 @Override
@@ -88,8 +91,9 @@ public class SearchResultFragment extends RoboListFragment {
                 }
             }.execute();
             return;
-        }
-        loadingDialog.hide();
+        } else {
+            loadingDialog.dismiss();
+        }*/
         createListView();
         initPlacesEfficientAdapter();
         if (locationProvider.getLocation().getLatitude() == 0 && locationProvider.getLocation().getLongitude() == 0) {
@@ -153,7 +157,7 @@ public class SearchResultFragment extends RoboListFragment {
         };
     }
 
-    public boolean doSearch(String searchQuery) {
+    public boolean doSearch(final String searchQuery) {
         if (locationProvider.getLocation().getLatitude() == 0 && locationProvider.getLocation().getLongitude() == 0) {
             return false;
         }
@@ -173,12 +177,26 @@ public class SearchResultFragment extends RoboListFragment {
                     if (placesApiResponseEntity.getPlaceList() != null) {
                         placeEfficientAdapter.addAll(placesApiResponseEntity.getPlaceList());
                         searchResultsView.animate();
+                    } else {
+                        String noResultsText;
+                        if (Strings.isNullOrEmpty(searchQuery)) {
+                            noResultsText = context.getString(R.string.search_places_nothing_found_in_area);
+                        } else {
+                            noResultsText = context.getString(R.string.search_places_nothing_found_by_query) + " \"" + searchQuery + "\"";
+                        }
+                        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                        final AlertDialog dialog = builder.setMessage(noResultsText).setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        }).show();
                     }
-                    loadingDialog.hide();
+                    loadingDialog.dismiss();
                 }
             });
         } else {
-            loadingDialog.hide();
+            loadingDialog.dismiss();
         }
         return true;
     }
@@ -204,13 +222,13 @@ public class SearchResultFragment extends RoboListFragment {
                             placeEfficientAdapter.addAll(placesApiResponseEntity.getPlaceList());
                         }
                     }
-                    loadingDialog.hide();
                     appState.setRequestIsInProgress(false);
+                    loadingDialog.dismiss();
                 }
             });
         } else {
             appState.setRequestIsInProgress(false);
-            loadingDialog.hide();
+            loadingDialog.dismiss();
         }
     }
 

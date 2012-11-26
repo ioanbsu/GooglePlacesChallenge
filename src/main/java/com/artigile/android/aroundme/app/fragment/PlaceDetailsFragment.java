@@ -85,11 +85,11 @@ public class PlaceDetailsFragment extends RoboFragment {
         initListeners();
     }
 
-    private void loadPlaceDetails(PlaceSelectedEvent e) {
+    public void loadPlaceDetails(Place place) {
         placeDetailsAreLoadingProgressBar.setVisibility(VISIBLE);
         selectAPlacePromotionLabel.setVisibility(INVISIBLE);
-        showPlaceDetails(e.getPlace(), context.getString(R.string.place_details_loading_label));
-        placesSearchService.loadPlaceDetails(e.getPlace(), new PlacesSearchListener() {
+        showPlaceDetails(place, context.getString(R.string.place_details_loading_label));
+        placesSearchService.loadPlaceDetails(place, new PlacesSearchListener() {
             @Override
             public void onResultReadyAndAppStateUpdated(PlacesApiResponseEntity placesApiResponseEntity) {
                 Place place = placesApiResponseEntity.getPlaceList().get(0);
@@ -117,7 +117,7 @@ public class PlaceDetailsFragment extends RoboFragment {
             if (place.getPlaceReview() != null) {
                 for (PlaceReview placeReview : place.getPlaceReview()) {
                     TextView ratingText = buildRatingText();
-                    ratingText.setText(Html.fromHtml(placeReview.getAuthorName() + ": " + placeReview.getText()).toString());
+                    ratingText.setText(Html.fromHtml("<b>"+placeReview.getAuthorName() + "</b>: " + placeReview.getText()));
                     reviewsContainer.addView(ratingText);
                 }
             } else {
@@ -180,7 +180,7 @@ public class PlaceDetailsFragment extends RoboFragment {
     class PlaceSelectedRecorder {
         @Subscribe
         public void recordPlaceSelected(PlaceSelectedEvent e) {
-            loadPlaceDetails(e);
+            loadPlaceDetails(e.getPlace());
         }
 
         @Subscribe
