@@ -1,10 +1,11 @@
 package com.artigile.android.aroundme;
 
 import android.os.AsyncTask;
-import com.artigile.android.aroundme.api.model.Place;
-import com.artigile.android.aroundme.api.model.PlacesApiResponseEntity;
-import com.artigile.android.aroundme.api.service.GooglePlacesApiImpl;
-import com.artigile.android.aroundme.api.service.RankByType;
+import com.artigile.android.aroundme.app.AppState;
+import com.artigile.android.aroundme.placesapi.model.Place;
+import com.artigile.android.aroundme.placesapi.model.PlacesApiResponseEntity;
+import com.artigile.android.aroundme.placesapi.service.GooglePlacesApiImpl;
+import com.artigile.android.aroundme.placesapi.service.RankByType;
 import com.artigile.android.aroundme.app.LocationProvider;
 import com.artigile.android.aroundme.app.PlacesSearchListener;
 import com.artigile.android.aroundme.app.event.PlacesSearchResultsAvailableEvent;

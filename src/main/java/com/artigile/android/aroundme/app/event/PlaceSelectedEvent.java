@@ -1,6 +1,6 @@
 package com.artigile.android.aroundme.app.event;
 
-import com.artigile.android.aroundme.api.model.Place;
+import com.artigile.android.aroundme.placesapi.model.Place;
 
 /**
  * @author IoaN, 11/20/12 11:22 PM

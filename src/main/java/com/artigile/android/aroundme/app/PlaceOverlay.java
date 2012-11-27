@@ -1,7 +1,9 @@
 package com.artigile.android.aroundme.app;
 
 import android.graphics.drawable.Drawable;
-import com.artigile.android.aroundme.api.model.Place;
+import com.artigile.android.aroundme.app.mapballoon.BalloonItemizedOverlay;
+import com.artigile.android.aroundme.app.mapballoon.BaloonTapListener;
+import com.artigile.android.aroundme.placesapi.model.Place;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
 import com.google.android.maps.OverlayItem;

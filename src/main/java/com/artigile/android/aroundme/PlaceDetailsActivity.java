@@ -1,6 +1,7 @@
 package com.artigile.android.aroundme;
 
 import android.os.Bundle;
+import com.artigile.android.aroundme.app.AppState;
 import com.artigile.android.aroundme.app.fragment.PlaceDetailsFragment;
 import roboguice.activity.RoboFragmentActivity;
 import roboguice.inject.InjectFragment;

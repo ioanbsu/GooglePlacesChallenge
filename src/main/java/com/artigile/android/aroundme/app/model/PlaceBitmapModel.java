@@ -1,7 +1,7 @@
 package com.artigile.android.aroundme.app.model;
 
 import android.graphics.Bitmap;
-import com.artigile.android.aroundme.api.model.Place;
+import com.artigile.android.aroundme.placesapi.model.Place;
 
 /**
  * @author IoaN, 11/14/12 9:14 PM

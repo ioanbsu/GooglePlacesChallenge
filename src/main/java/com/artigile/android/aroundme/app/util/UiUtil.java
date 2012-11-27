@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.app.Fragment;
 import com.artigile.android.aroundme.MapResultsActivity;
-import com.artigile.android.aroundme.api.model.Place;
+import com.artigile.android.aroundme.placesapi.model.Place;
 import com.google.common.base.Strings;
 
 import javax.inject.Inject;

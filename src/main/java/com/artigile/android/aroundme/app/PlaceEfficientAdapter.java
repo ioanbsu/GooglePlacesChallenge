@@ -9,7 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 import com.artigile.android.aroundme.R;
-import com.artigile.android.aroundme.api.model.Place;
+import com.artigile.android.aroundme.app.util.BitmapLoader;
+import com.artigile.android.aroundme.placesapi.model.Place;
 
 import java.text.DecimalFormat;
 
