@@ -24,6 +24,12 @@
             <id>sonatype-repo</id>
             <url>https://oss.sonatype.org/content/repositories</url>
         </repository>
+        <repository>
+            <id>sonatype.snapshots</id>
+            <name>Sonatype snapshot repository</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+            <layout>default</layout>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -57,16 +63,29 @@
         	<version>13.0.1</version>
         </dependency>
 
-    <!--    <dependency>
-            <groupId>com.google.api-client</groupId>
-            <artifactId>google-api-client</artifactId>
-            <version>${google-api-client.version}</version>
+        <dependency>
+            <groupId>org.jukito</groupId>
+            <artifactId>jukito</artifactId>
+            <version>1.1</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.google.api-client-android2</groupId>
-            <artifactId>google-api-client-android2</artifactId>
-            <version>${google-api-client.version}</version>
-        </dependency>-->
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.9</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!--    <dependency>
+                <groupId>com.google.api-client</groupId>
+                <artifactId>google-api-client</artifactId>
+                <version>${google-api-client.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.api-client-android2</groupId>
+                <artifactId>google-api-client-android2</artifactId>
+                <version>${google-api-client.version}</version>
+            </dependency>-->
         <!--
 
                 <dependency>

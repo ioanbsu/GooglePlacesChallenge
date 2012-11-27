@@ -26,6 +26,50 @@
                 }
             ]
         },
+        "RATES": {
+            "RS": [
+                {
+                    "DESC": "Incremental",
+                    "RATE": "3.5",
+                    "RQ": "Per 1/2-hr"
+                },
+                {
+                    "DESC": "24-Hour Max/Lost Tkt",
+                    "RATE": "36",
+                    "RQ": "Flat rate"
+                },
+                {
+                    "DESC": "Early Bird",
+                    "RATE": "20",
+                    "RQ": "Flat rate",
+                    "RR": "Mon-Fri: In by 10AM/Out by 7PM"
+                },
+                {
+                    "DESC": "Motorcycle",
+                    "RATE": "7",
+                    "RQ": "Flat rate"
+                },
+                {
+                    "DESC": "Park & Ride Validation",
+                    "RATE": "3",
+                    "RQ": "Per day",
+                    "RR": "Weekend only until 10PM"
+                },
+                {
+                    "DESC": "Evening",
+                    "RATE": "7",
+                    "RQ": "Flat rate",
+                    "RR": "Mon-Fri: In after 5PM Out by 8AM"
+                },
+
+                {
+                    "DESC": "Weekend",
+                    "RATE": "7",
+                    "RQ": "Per day",
+                    "RR": "Sat: In after 7AM/Out by 4AM;Sun: In after 4AM/Out by 4AM"
+                }
+            ]
+        },
         "OCC": "111",
         "OPER": "1140",
         "PTS": "1",

@@ -18,6 +18,7 @@ import com.artigile.android.aroundme.app.LocationProvider;
 import com.artigile.android.aroundme.app.fragment.SearchResultFragment;
 import com.artigile.android.aroundme.sfparkingapi.SfParkingResolver;
 import com.artigile.android.aroundme.sfparkingapi.SfParkingResolverImpl;
+import com.google.inject.ImplementedBy;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import roboguice.activity.RoboFragmentActivity;
@@ -38,8 +39,6 @@ public class GooglePlaces extends RoboFragmentActivity implements SearchView.OnQ
     private SearchResultFragment searchResultFragment;
     @InjectView(R.id.doSearchMainButton)
     private ImageView doSearchMainButton;
-    @Inject
-    private SfParkingResolverImpl sfParkingResolver;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -99,7 +98,6 @@ public class GooglePlaces extends RoboFragmentActivity implements SearchView.OnQ
     }
 
     private void doSearch(String query) {
-        sfParkingResolver.getParkingSpacesList(null);
         DisplayMetrics displaymetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
         if (!searchResultFragment.doSearch(query)) {
