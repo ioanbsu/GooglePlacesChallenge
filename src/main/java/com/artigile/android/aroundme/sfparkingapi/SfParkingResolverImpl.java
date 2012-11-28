@@ -20,7 +20,7 @@ import java.net.URLConnection;
 @Singleton
 public class SfParkingResolverImpl implements SfParkingResolver {
 
-    public static final String testUrl = "http://api.sfpark.org/sfpark/rest/availabilityservice?lat=37.792275&long=-122.397089&radius=0.25&uom=mile&response=json";
+    public static final String testUrl = "http://api.sfpark.org/sfpark/rest/availabilityservice?lat=37.792275&long=-122.397089&radius=5&uom=mile&response=json&pricing=yes";
     @Inject
     private SfParkingResponseParser sfParkingResponseParser;
     @Inject

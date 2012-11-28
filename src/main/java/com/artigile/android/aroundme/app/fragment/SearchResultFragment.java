@@ -10,21 +10,18 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.Toast;
-import com.artigile.android.aroundme.app.AppState;
+import android.widget.*;
 import com.artigile.android.aroundme.PlacesSearchService;
 import com.artigile.android.aroundme.R;
-import com.artigile.android.aroundme.placesapi.model.Place;
-import com.artigile.android.aroundme.placesapi.model.PlacesApiResponseEntity;
+import com.artigile.android.aroundme.app.AppState;
 import com.artigile.android.aroundme.app.LocationProvider;
 import com.artigile.android.aroundme.app.PlaceEfficientAdapter;
 import com.artigile.android.aroundme.app.PlacesSearchListener;
 import com.artigile.android.aroundme.app.event.PlaceSelectedEvent;
 import com.artigile.android.aroundme.app.util.AnimationUtil;
 import com.artigile.android.aroundme.app.util.UiUtil;
+import com.artigile.android.aroundme.placesapi.model.Place;
+import com.artigile.android.aroundme.placesapi.model.PlacesApiResponseEntity;
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
@@ -71,28 +68,6 @@ public class SearchResultFragment extends RoboListFragment {
 
     private void initOnResume() {
         createLoadingDialog();
-        /*if (placesSearchService.isQueued()) {
-            showLoading(context.getString(R.string.search_places_loading_window));
-            new AsyncTask<Void, Void, Void>() {
-                @Override
-                protected Void doInBackground(Void... params) {
-                    try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    return null;
-                }
-
-                @Override
-                protected void onPostExecute(Void aVoid) {
-                    initOnResume();
-                }
-            }.execute();
-            return;
-        } else {
-            loadingDialog.dismiss();
-        }*/
         createListView();
         initPlacesEfficientAdapter();
         if (locationProvider.getLocation().getLatitude() == 0 && locationProvider.getLocation().getLongitude() == 0) {
@@ -107,7 +82,6 @@ public class SearchResultFragment extends RoboListFragment {
                 }
             }
         }
-
     }
 
     private void createListView() {
@@ -119,6 +93,12 @@ public class SearchResultFragment extends RoboListFragment {
         } else {
 
         }
+        getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                return false;
+            }
+        });
     }
 
     @Override

@@ -27,13 +27,19 @@ public class UiUtil {
 
     public void navigateToPlace(Place place) {
         if (place != null) {
-            Intent intent = null;
+            String addressQuery = "";
             if (Strings.isNullOrEmpty(place.getFormattedAddress())) {
-                intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse("google.navigation:q=" + place.getGeometry()
-                        .getLocation().getLat() + "," + place.getGeometry().getLocation().getLng()));
+                addressQuery = place.getGeometry().getLocation().getLat() + "," + place.getGeometry().getLocation().getLng();
             } else {
-                intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse("google.navigation:q=" + place.getFormattedAddress()));
+                addressQuery = place.getFormattedAddress();
             }
+            navigateToPlace(addressQuery);
+        }
+    }
+
+    public void navigateToPlace(String queryAddress) {
+        if (queryAddress != null) {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("google.navigation:q=" + queryAddress));
             context.startActivity(intent);
         }
     }

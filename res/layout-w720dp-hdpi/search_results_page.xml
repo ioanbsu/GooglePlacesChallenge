@@ -24,14 +24,19 @@
             android:paddingLeft="5dp"
             android:paddingRight="5dp"
             android:paddingBottom="2dp"
-            android:paddingTop="2dp" />
+            android:paddingTop="2dp"/>
 
-        <fragment
-            android:name="com.artigile.android.aroundme.app.fragment.PlaceDetailsFragment"
-            android:id="@+id/selectedPlaceDetailsFragment"
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"/>
+            android:id="@+id/scrollView">
+            <fragment
+                android:name="com.artigile.android.aroundme.app.fragment.PlaceDetailsFragment"
+                android:id="@+id/selectedPlaceDetailsFragment"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"/>
+        </ScrollView>
     </LinearLayout>
 
     <ImageView

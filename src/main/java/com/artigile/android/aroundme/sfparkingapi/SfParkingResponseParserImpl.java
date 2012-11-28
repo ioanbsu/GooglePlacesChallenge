@@ -43,18 +43,24 @@ public class SfParkingResponseParserImpl implements SfParkingResponseParser {
     private static final String PARKING_SPACE_LOC = "LOC";
     private static final String PARKING_SPACE_OPHRS = "OPHRS";
     private static final String PARKING_SPACE_RATES = "RATES";
+
+    //    =================RATES CONSTANTS=======================
     private static final String RATE_BEG = "BEG";
     private static final String RATE_END = "END";
     private static final String RATE_RATE = "RATE";
     private static final String RATE_DESC = "DESC";
     private static final String RATE_RQ = "RQ";
     private static final String RATE_RR = "RR";
+    private static final String RATE_RS = "RS";
+
+    //    =================OPERATION HOURS CONSTANTS=======================
     private static final String OPHRS_FROM = "FROM";
     private static final String OPHRS_END = "END";
     private static final String OPHRS_TO = "TO";
     private static final String OPHRS_BEG = "BEG";
     private static final String OPHRS_OPS = "OPS";
-    private static final String RATE_RS = "RS";
+
+    public static final int MAX_PARSED_RESULTS=50;
 
     @Override
     public ParkingPlacesResult parse(String response) throws ParkingResultNotSuccessException {
@@ -104,6 +110,9 @@ public class SfParkingResponseParserImpl implements SfParkingResponseParser {
                     parkingSpace.setOphrs(getOpenHoursFromJson(parkingSpaceJson.optJSONObject(PARKING_SPACE_OPHRS)));
                     parkingSpace.setRates(getRatesFromJson(parkingSpaceJson.optJSONObject(PARKING_SPACE_RATES)));
                     parkingSpaceList.add(parkingSpace);
+                    if(i>MAX_PARSED_RESULTS){
+                        break;
+                    }
 
                 } catch (JSONException e) {
 //                    Log.w("Parking space parsing.", "Failed to parse parking place with index: " + i + ". Array data: " + parkingSpacesJsonArray);

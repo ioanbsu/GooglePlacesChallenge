@@ -1,18 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="fill_parent"
-              android:layout_height="fill_parent">
-    <fragment
-        android:name="com.artigile.android.aroundme.app.fragment.PlaceDetailsFragment"
-        android:id="@+id/selectedPlaceDetailsFragment"
-        android:layout_weight="1"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/scrollView">
+
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"/>
-    <fragment
-        android:name="com.artigile.android.aroundme.app.fragment.ParkingSpacesFragment"
-        android:layout_weight="1"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"/>
-</LinearLayout>
+        android:layout_height="fill_parent">
+
+        <fragment
+            android:name="com.artigile.android.aroundme.app.fragment.PlaceDetailsFragment"
+            android:id="@+id/selectedPlaceDetailsFragment"
+            android:layout_weight="1"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"/>
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nearby parking"
+            android:id="@+id/textView"
+            android:layout_gravity="center"
+            style="@style/Theme.PlaceDetails.title"
+            android:layout_marginTop="50dp"/>
+
+        <fragment
+            android:name="com.artigile.android.aroundme.app.fragment.ParkingSpacesFragment"
+            android:layout_weight="1"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"/>
+    </LinearLayout>
+</ScrollView>
