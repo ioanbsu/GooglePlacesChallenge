@@ -5,7 +5,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.*;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import com.artigile.android.aroundme.R;
 import com.artigile.android.aroundme.app.AppLocationProvider;
 import com.artigile.android.aroundme.app.AppState;
@@ -22,6 +25,8 @@ import roboguice.inject.InjectView;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -71,18 +76,33 @@ public class ParkingSpacesFragment extends RoboFragment {
         uiUtil.navigateToPlace(splittedCoords.get(1) + "," + splittedCoords.get(0));
     }
 
-
     private void popupateParkingDataOnUi(ParkingInfoReadyEvent e) {
         parkingPlaceFragment.removeAllViews();
         if (getActivity() != null && e.getParkingPlacesResult() != null && e.getParkingPlacesResult().getNumRecords() > 0) {
             noParkingDataAvailableLabel.setVisibility(View.GONE);
             int ordinalNumber = 1;
             List<ParkingSpace> parkingSpaces = e.getParkingPlacesResult().getAvl();
+            Collections.sort(parkingSpaces, new Comparator<ParkingSpace>() {
+                @Override
+                public int compare(ParkingSpace lhs, ParkingSpace rhs) {
+                    if (lhs.getLoc() == null || rhs.getLoc() == null) {
+                        return 0;
+                    }
+                    float distance1 = uiStringUtil.getDistanceInMiles(lhs.getLoc(), appState.getLastSelectedPlaceDetails().getGeometry().getLocation().getLng() + ", " + appState.getLastSelectedPlaceDetails().getGeometry().getLocation().getLat());
+                    float distance2 = uiStringUtil.getDistanceInMiles(rhs.getLoc(), appState.getLastSelectedPlaceDetails().getGeometry().getLocation().getLng() + ", " + appState.getLastSelectedPlaceDetails().getGeometry().getLocation().getLat());
+                    if (distance1 > distance2) {
+                        return 1;
+                    } else if (distance1 < distance2) {
+                        return -1;
+                    }
+                    return 0;
+                }
+            });
             for (ParkingSpace parkingSpace : parkingSpaces) {
                 View view = mInflater.inflate(R.layout.parking_place_detail, null);
                 new ParkingDetailsLazyLoader(view, ordinalNumber++, parkingSpace).execute();
             }
-        } else{
+        } else {
             noParkingDataAvailableLabel.setVisibility(View.VISIBLE);
         }
         parkingLoadingProgressBarLayout.setVisibility(View.GONE);
@@ -127,7 +147,9 @@ public class ParkingSpacesFragment extends RoboFragment {
                 parkingTypeTextView.setText(getActivity().getString(R.string.parking_on_street_parking));
             }
             placeAddressTextView.setText(parkingSpace.getDesc());
-            placeDistanceTextView.setText("(" + uiStringUtil.getDistanceInMilesStr(appLocationProvider.getLocation(), parkingSpace.getLoc()) + ")");
+            String distance = uiStringUtil.getDistanceInMilesStr(parkingSpace.getLoc(),
+                    appState.getLastSelectedPlaceDetails().getGeometry().getLocation().getLng() + ", " + appState.getLastSelectedPlaceDetails().getGeometry().getLocation().getLat());
+            placeDistanceTextView.setText("(" + distance + ")");
             placeAvailableSpacesTextView.setText((parkingSpace.getOper() - parkingSpace.getOcc()) + " available of " + parkingSpace.getOper());
             placeHoursOfOperationTextView.setText(uiStringUtil.buildHoursOfOperation(parkingSpace.getOphrs()));
             parkingRatesTextView.setText(uiStringUtil.buildRates(parkingSpace.getRates()));

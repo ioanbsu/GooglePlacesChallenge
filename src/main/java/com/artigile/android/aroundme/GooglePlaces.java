@@ -1,13 +1,16 @@
 package com.artigile.android.aroundme;
 
+import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.view.*;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.Toast;
@@ -39,6 +42,7 @@ public class GooglePlaces extends RoboFragmentActivity implements SearchView.OnQ
     private AppState appState;
     @Inject
     private EventBus eventBus;
+    private ProgressDialog loadingDialog;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -104,7 +108,7 @@ public class GooglePlaces extends RoboFragmentActivity implements SearchView.OnQ
         getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
         if (!searchResultFragment.doSearch(query)) {
             appState.setPendingSearchEvent(new PendingSearchEvent(query));
-            Toast.makeText(getBaseContext(), R.string.search_please_wait_for_better_gps_signal, 10).show();
+            Toast.makeText(getBaseContext(), R.string.search_please_wait_for_better_gps_signal, 20).show();
         } else {
             doSearchMainButton.setVisibility(INVISIBLE);
         }

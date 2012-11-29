@@ -4,7 +4,6 @@ import android.location.Location;
 import com.artigile.android.aroundme.sfparkingapi.model.Ophrs;
 import com.artigile.android.aroundme.sfparkingapi.model.Rate;
 import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 
 import javax.inject.Singleton;
@@ -63,19 +62,20 @@ public class UiStringUtil {
         }
     }
 
+    public float getDistanceInMiles(String parkingLocation1, String parkingLocation2) {
+        return getDistanceInMiles(getLocationFromString(parkingLocation1), getLocationFromString(parkingLocation2));
+
+    }
+
     public float getDistanceInMiles(Location location, String parkingLocationData) {
         try {
             if (parkingLocationData == null) {
                 return -1;
             }
-            List<Double> locationStringCoordinates = extractCoordinates(parkingLocationData);
-            if (locationStringCoordinates.size() < 2) {
+            Location placeLocation = getLocationFromString(parkingLocationData);
+            if (placeLocation == null) {
                 return -1;
             }
-
-            Location placeLocation = new Location("");
-            placeLocation.setLatitude(locationStringCoordinates.get(1));
-            placeLocation.setLongitude(locationStringCoordinates.get(0));
             return getDistanceInMiles(location, placeLocation);
         } catch (NumberFormatException e) {
             return -1;
@@ -86,8 +86,8 @@ public class UiStringUtil {
         return location1.distanceTo(location2) * MILES_IN_METER;
     }
 
-    public String getDistanceInMilesStr(Location location, String parkingLocationData) {
-        float distance = getDistanceInMiles(location, parkingLocationData);
+    public String getDistanceInMilesStr(String parkingLocationData1, String parkingLocationData2) {
+        float distance = getDistanceInMiles(parkingLocationData1, parkingLocationData2);
         if (distance == -1) {
             return "";
         }
@@ -95,14 +95,25 @@ public class UiStringUtil {
 
     }
 
-
     public List<Double> extractCoordinates(String placeLocation) {
 
         List<Double> locationStringCoordinates = new ArrayList<Double>();
-            StringTokenizer coordinatesTokinezer = new StringTokenizer(placeLocation, ",");
-            while (coordinatesTokinezer.hasMoreTokens()) {
-                locationStringCoordinates.add(Double.valueOf(coordinatesTokinezer.nextToken()));
-            }
+        StringTokenizer coordinatesTokinezer = new StringTokenizer(placeLocation, ",");
+        while (coordinatesTokinezer.hasMoreTokens()) {
+            locationStringCoordinates.add(Double.valueOf(coordinatesTokinezer.nextToken()));
+        }
         return locationStringCoordinates;
+    }
+
+    private Location getLocationFromString(String parkingLocationData) {
+        List<Double> locationStringCoordinates = extractCoordinates(parkingLocationData);
+        if (locationStringCoordinates.size() < 2) {
+            return null;
+        }
+
+        Location placeLocation = new Location("");
+        placeLocation.setLatitude(locationStringCoordinates.get(1));
+        placeLocation.setLongitude(locationStringCoordinates.get(0));
+        return placeLocation;
     }
 }

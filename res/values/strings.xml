@@ -43,9 +43,7 @@
     <string name="parking_on_street_parking">On street parking</string>
     <string name="parking_nearby_parkng_title">Nearby parking</string>
     <string name="parking_loading_data_text">Refreshing parking data, please wait</string>
-    <string name="parking_no_parking_found_in_area_message">Unfortunately no parking data available for this area.
-        Please check back later.
-    </string>
+    <string name="parking_no_parking_found_in_area_message">Unfortunately no parking data available within 0.5 miles to this place.</string>
     <string name="place_details_access_horizontal_divider">horizontal divider</string>
     <string name="parking_navigate_ro_parking_lot">Navigate to this parking lot</string>
 </resources>

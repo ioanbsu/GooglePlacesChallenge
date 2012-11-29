@@ -13,6 +13,7 @@ import javax.inject.Singleton;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.MessageFormat;
 
 /**
  * @author IoaN, 11/26/12 8:47 PM
@@ -29,13 +30,15 @@ public class SfParkingResolverImpl implements SfParkingResolver {
 
     @Override
     public void getParkingSpacesList(Place place) {
-        new AsyncTask<String, Void, ParkingPlacesResult>() {
+        new AsyncTask<Place, Void, ParkingPlacesResult>() {
 
             @Override
-            protected ParkingPlacesResult doInBackground(String... params) {
+            protected ParkingPlacesResult doInBackground(Place... params) {
                 InputStream is = null;
+                Place place=params[0];
+                String url= MessageFormat.format("http://api.sfpark.org/sfpark/rest/availabilityservice?lat={0}&long={1}&radius=0.5&uom=mile&response=json&pricing=yes",place.getGeometry().getLocation().getLat(),place.getGeometry().getLocation().getLng());
                 try {
-                    URLConnection conn = new URL(testUrl).openConnection();
+                    URLConnection conn = new URL(url).openConnection();
                     is = conn.getInputStream();
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
@@ -76,6 +79,6 @@ public class SfParkingResolverImpl implements SfParkingResolver {
                     eventBus.post(new ParkingInfoReadyEvent(parkingPlacesResult));
                 }
             }
-        }.execute();
+        }.execute(place);
     }
 }

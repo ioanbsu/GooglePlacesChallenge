@@ -23,18 +23,21 @@ public class AppLocationProvider implements LocationListener {
     private Location location = new Location("");
 
     public AppLocationProvider() {
-//        location.setLongitude(-122.397089);
-//        location.setLatitude(37.792275);
+        location.setLongitude(-122.397089);
+        location.setLatitude(37.792275);
     }
 
     @Override
     public void onLocationChanged(Location location) {
-        this.location = location;
+     //   this.location = location;
+        if (location.getAccuracy() < 100 && location.getAccuracy() > 0 && appState.getPendingSearchEvent() != null) {
+            eventBus.post(appState.getPendingSearchEvent());
+        }
     }
 
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
-        if (status == android.location.LocationProvider.AVAILABLE&&appState.getPendingSearchEvent()!=null) {
+        if (status == android.location.LocationProvider.AVAILABLE && appState.getPendingSearchEvent() != null) {
             eventBus.post(appState.getPendingSearchEvent());
         }
     }
