@@ -14,8 +14,8 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
-import com.artigile.android.aroundme.app.mapballoon.BaloonTapListener;
 import com.artigile.android.aroundme.app.util.BitmapLoader;
+import com.artigile.android.aroundme.app.util.UiUtil;
 import com.artigile.android.aroundme.placesapi.model.Place;
 import com.artigile.android.aroundme.placesapi.model.PlacesApiResponseEntity;
 import com.artigile.android.aroundme.app.*;
@@ -28,6 +28,7 @@ import roboguice.inject.InjectView;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -46,9 +47,11 @@ public class MapResultsActivity extends RoboMapActivity {
     @Inject
     private AppState appState;
     @Inject
-    private LocationProvider locationProvider;
+    private AppLocationProvider appLocationProvider;
     @Inject
     private PlacesSearchService placesSearchService;
+    @Inject
+    private UiUtil uiUtil;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -58,11 +61,14 @@ public class MapResultsActivity extends RoboMapActivity {
     }
 
     public void centerOnMyLocation(View view) {
-        mapView.getController().animateTo(new GeoPoint((int) (1E6 * locationProvider.getLocation().getLatitude()),
-                (int) (1E6 * locationProvider.getLocation().getLongitude())));
+        mapView.getController().animateTo(new GeoPoint((int) (1E6 * appLocationProvider.getLocation().getLatitude()),
+                (int) (1E6 * appLocationProvider.getLocation().getLongitude())));
     }
 
     public void loadMorePlaces(View v) {
+        if(appState.getLastSearchResult()==null){
+            uiUtil.showSearchPage(this);
+        }
         if (appState.getLastSearchResult().getNextPageToken() != null) {
             loadingMoreResults.setVisibility(View.VISIBLE);
             placesSearchService.loadMorePlaces(new PlacesSearchListener() {
@@ -102,31 +108,10 @@ public class MapResultsActivity extends RoboMapActivity {
         return false;
     }
 
-    private BaloonTapListener<Place> createBaloonListener() {
-        return new BaloonTapListener<Place>() {
-            @Override
-            public void onBaloonTapped(Place tapedValue) {
-                showPlaceDetails(tapedValue);
-            }
-        };
-    }
-
-    private void showPlaceDetails(Place tapedValue) {
-        System.out.println("do nothing here....yet");
-    }
-
-    private BitmapDrawable scaleBitmap(Bitmap bitmap) {
-        Bitmap bitmapOrig = Bitmap.createScaledBitmap(bitmap, 30, 30, false);
-        return new BitmapDrawable(getResources(), bitmapOrig);
-    }
-
     private void displayAllPlacesFromSavedAppState() {
         mapView.getOverlays().clear();
-        if (appState.getSinglePlaceToDisplayOnMap() != null
-                && appState.getSinglePlaceToDisplayOnMap().getPlaceList() != null
-                && !appState.getSinglePlaceToDisplayOnMap().getPlaceList().isEmpty()) {
-            showPlaceDetails(appState.getSinglePlaceToDisplayOnMap().getPlaceList().get(0));
-            displayMapOverlays(appState.getSinglePlaceToDisplayOnMap().getPlaceList());
+        if (appState.getSinglePlaceToDisplayOnMap() != null) {
+            displayMapOverlays(Arrays.asList(appState.getSinglePlaceToDisplayOnMap()));
         } else if (appState.getFoundPlacesList() != null
                 && appState.getFoundPlacesList().getPlaceList() != null
                 && !appState.getFoundPlacesList().getPlaceList().isEmpty()) {
@@ -136,8 +121,8 @@ public class MapResultsActivity extends RoboMapActivity {
     }
 
     private void displayMyLocationOnMap() {
-        GeoPoint geoPoint = new GeoPoint((int) (1E6 * locationProvider.getLocation().getLatitude()),
-                (int) (1E6 * locationProvider.getLocation().getLongitude()));
+        GeoPoint geoPoint = new GeoPoint((int) (1E6 * appLocationProvider.getLocation().getLatitude()),
+                (int) (1E6 * appLocationProvider.getLocation().getLongitude()));
         Place place = new Place();
         place.setName(getBaseContext().getString(R.string.my_location_on_map_overlay_name));
         final PlaceOverlay balloonOverlay = createMapOverlay(place, BitmapFactory.decodeResource(getBaseContext().getResources(), R.drawable.my_location), geoPoint);
@@ -145,10 +130,10 @@ public class MapResultsActivity extends RoboMapActivity {
     }
 
     private void displayMapOverlays(List<Place> placeList) {
-        float minLon = (float) locationProvider.getLocation().getLongitude();
-        float maxLon = (float) locationProvider.getLocation().getLongitude();
-        float minLat = (float) locationProvider.getLocation().getLatitude();
-        float maxLat = (float) locationProvider.getLocation().getLatitude();
+        float minLon = (float) appLocationProvider.getLocation().getLongitude();
+        float maxLon = (float) appLocationProvider.getLocation().getLongitude();
+        float minLat = (float) appLocationProvider.getLocation().getLatitude();
+        float maxLat = (float) appLocationProvider.getLocation().getLatitude();
         for (final Place selectedPlace : placeList) {
             minLon = Math.min(minLon, selectedPlace.getGeometry().getLocation().getLng());
             maxLon = Math.max(maxLon, selectedPlace.getGeometry().getLocation().getLng());
@@ -231,12 +216,19 @@ public class MapResultsActivity extends RoboMapActivity {
 
     private PlaceOverlay createMapOverlay(Place place, Bitmap bitmap, GeoPoint geoPoint) {
         final PlaceOverlay baloonOverlay = new PlaceOverlay(scaleBitmap(bitmap), mapView, place);
-        baloonOverlay.setBalloonBottomOffset(20);
+        baloonOverlay.setBalloonBottomOffset(30);
         OverlayItem overlayItem = new OverlayItem(geoPoint, place.getName(), null);
         baloonOverlay.addOverlay(overlayItem);
-        baloonOverlay.setBaloonClickListener(createBaloonListener());
         return baloonOverlay;
     }
+
+
+
+    private BitmapDrawable scaleBitmap(Bitmap bitmap) {
+        Bitmap bitmapOrig = Bitmap.createScaledBitmap(bitmap, 50, 50, false);
+        return new BitmapDrawable(getResources(), bitmapOrig);
+    }
+
 
 
 }

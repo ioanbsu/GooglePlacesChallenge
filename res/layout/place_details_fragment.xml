@@ -3,166 +3,156 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-    <ProgressBar
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/placeDetailsFragmentProgressBar"
-        android:layout_centerInParent="true"
-        android:visibility="invisible"/>
-
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/placeDetailsFragmentSelectPlaceLabel"
-        android:layout_centerInParent="true"
-        android:text="@string/place_details_fragment_select_place_label"
-        android:visibility="invisible"
-        android:textSize="50dp"/>
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/placeDetailsFragmentSelectPlaceLabel"
+            android:layout_centerInParent="true"
+            android:text="@string/place_details_fragment_select_place_label"
+            android:visibility="invisible"
+            android:textSize="50dp"/>
 
 
     <LinearLayout
-        android:id="@+id/placeDetailsFragmentMainPanel"
-        android:orientation="vertical"
-        android:visibility="invisible"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clickable="false">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/placeDetailsName"
-            android:layout_gravity="center"
-            android:textSize="25dp"
-            android:paddingLeft="20dp"
-            android:paddingRight="20dp"
-            android:gravity="center"
-            />
-
-        <LinearLayout
+            android:id="@+id/placeDetailsFragmentMainPanel"
             android:orientation="vertical"
+            android:visibility="invisible"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:paddingLeft="30dp"
-            android:paddingRight="30dp">
+            android:clickable="false">
+
+        <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/placeDetailsName"
+                android:layout_gravity="center"
+                android:textSize="25dp"
+                android:gravity="center"
+                />
+
+        <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                >
 
             <RatingBar
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/placeDetailsRatingBar"
-                android:layout_gravity="center"
-                android:rating="0"
-                android:stepSize=".5"
-                android:numStars="5"
-                android:isIndicator="true"
-                android:clickable="false"
-                android:focusable="false"/>
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/placeDetailsRatingBar"
+                    android:layout_gravity="center"
+                    android:rating="0"
+                    android:stepSize=".5"
+                    android:numStars="5"
+                    android:isIndicator="true"
+                    android:clickable="false"
+                    android:focusable="false"/>
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/place_details_address_title"
-                style="@style/Theme.PlaceDetails.title"/>
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/place_details_address_title"
+                    style="@style/Theme.PlaceDetails.title"/>
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/placeDetailsAddress"
-                android:autoLink="map"
-                android:textIsSelectable="false"
-                style="@style/Theme.PlaceDetails.value"
-                />
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/placeDetailsAddress"
+                    android:autoLink="map"
+                    android:textIsSelectable="false"
+                    style="@style/Theme.PlaceDetails.value"
+                    />
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/place_details_web_page"
-                style="@style/Theme.PlaceDetails.title"/>
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/place_details_web_page"
+                    style="@style/Theme.PlaceDetails.title"/>
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/placeDetailsWebAddress"
-                android:autoLink="web"
-                style="@style/Theme.PlaceDetails.value"/>
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/placeDetailsWebAddress"
+                    android:autoLink="web"
+                    style="@style/Theme.PlaceDetails.value"/>
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/place_details_phone"
-                style="@style/Theme.PlaceDetails.title"/>
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/place_details_phone"
+                    style="@style/Theme.PlaceDetails.title"/>
 
             <TextView
-                android:id="@+id/placeDetailsPhone"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="@style/Theme.PlaceDetails.value"/>
+                    android:id="@+id/placeDetailsPhone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/Theme.PlaceDetails.value"/>
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/place_details_place_type"
-                android:layout_gravity="left|center_vertical"
-                style="@style/Theme.PlaceDetails.title"/>
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/place_details_place_type"
+                    android:layout_gravity="left|center_vertical"
+                    style="@style/Theme.PlaceDetails.title"/>
 
             <TextView
-                android:id="@+id/placeDetailsPlaceType"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="left|center_vertical"
-                android:textIsSelectable="false"
-                style="@style/Theme.PlaceDetails.value"
-                />
+                    android:id="@+id/placeDetailsPlaceType"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left|center_vertical"
+                    android:textIsSelectable="false"
+                    style="@style/Theme.PlaceDetails.value"
+                    />
 
             <ImageView
-                xmlns:android="http://schemas.android.com/apk/res/android"
-                android:src="@android:drawable/divider_horizontal_bright"
-                android:layout_width="fill_parent"
-                android:layout_height="2dp"
-                android:scaleType="fitXY"
-                android:paddingLeft="5dp"
-                android:paddingRight="5dp"
-                android:paddingBottom="2dp"
-                android:paddingTop="2dp"/>
+                    android:src="@android:drawable/divider_horizontal_bright"
+                    android:layout_width="fill_parent"
+                    android:layout_height="2dp"
+                    android:scaleType="fitXY"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:paddingBottom="2dp"
+                    android:paddingTop="2dp"
+                    android:contentDescription="@string/place_details_access_horizontal_divider"/>
 
             <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center">
+                    android:orientation="horizontal"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center">
 
                 <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/place_details_navigate"
-                    android:id="@+id/placeDetailsNavigateToPlace"
-                    android:layout_marginRight="50dp"
-                    />
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/place_details_navigate"
+                        android:id="@+id/placeDetailsNavigateToPlace"
+                        android:layout_marginRight="50dp"
+                        />
 
                 <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/place_details_map"
-                    android:id="@+id/placeDetailsShowMap"
-                    android:layout_marginLeft="50dp"
-                    />
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/place_details_map"
+                        android:id="@+id/placeDetailsShowMap"
+                        android:layout_marginLeft="50dp"
+                        />
             </LinearLayout>
 
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/place_details_reviews_title"
-                android:onClick="showMapFromDetails"
-                style="@style/Theme.PlaceDetails.title"
-                android:id="@+id/textView"/>
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/place_details_reviews_title"
+                    android:onClick="showMapFromDetails"
+                    style="@style/Theme.PlaceDetails.title"
+                    android:id="@+id/textView"/>
 
             <LinearLayout
-                android:id="@+id/placeDetaildReviews"
-                android:orientation="vertical"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                    android:id="@+id/placeDetaildReviews"
+                    android:orientation="vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
             </LinearLayout>
 
         </LinearLayout>

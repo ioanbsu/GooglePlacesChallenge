@@ -3,7 +3,9 @@ package com.artigile.android.aroundme.app;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
+import com.google.common.eventbus.EventBus;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 /**
@@ -12,9 +14,18 @@ import javax.inject.Singleton;
  * Time: 3:28 PM
  */
 @Singleton
-public class LocationProvider implements LocationListener {
+public class AppLocationProvider implements LocationListener {
 
-    private Location location=new Location("");
+    @Inject
+    private AppState appState;
+    @Inject
+    private EventBus eventBus;
+    private Location location = new Location("");
+
+    public AppLocationProvider() {
+        location.setLongitude(-122.397089);
+        location.setLatitude(37.792275);
+    }
 
     @Override
     public void onLocationChanged(Location location) {
@@ -23,8 +34,10 @@ public class LocationProvider implements LocationListener {
 
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
-
-
+        if (status == android.location.LocationProvider.AVAILABLE&&appState.getPendingSearchEvent()!=null) {
+            eventBus.post(appState.getPendingSearchEvent());
+            appState.setPendingSearchEvent(null);
+        }
     }
 
     @Override

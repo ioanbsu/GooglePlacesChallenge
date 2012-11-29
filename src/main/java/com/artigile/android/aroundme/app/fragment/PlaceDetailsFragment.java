@@ -1,5 +1,6 @@
 package com.artigile.android.aroundme.app.fragment;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.Html;
@@ -7,16 +8,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
-import com.artigile.android.aroundme.app.AppState;
-import com.artigile.android.aroundme.PlacesSearchService;
+import com.artigile.android.aroundme.app.PlacesSearchService;
 import com.artigile.android.aroundme.R;
-import com.artigile.android.aroundme.placesapi.model.Place;
-import com.artigile.android.aroundme.placesapi.model.PlaceReview;
-import com.artigile.android.aroundme.placesapi.model.PlacesApiResponseEntity;
+import com.artigile.android.aroundme.app.AppState;
 import com.artigile.android.aroundme.app.PlacesSearchListener;
 import com.artigile.android.aroundme.app.event.PlaceSelectedEvent;
 import com.artigile.android.aroundme.app.event.PlacesSearchResultsAvailableEvent;
 import com.artigile.android.aroundme.app.util.UiUtil;
+import com.artigile.android.aroundme.placesapi.model.Place;
+import com.artigile.android.aroundme.placesapi.model.PlaceReview;
+import com.artigile.android.aroundme.placesapi.model.PlacesApiResponseEntity;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
@@ -45,8 +46,6 @@ public class PlaceDetailsFragment extends RoboFragment {
     private TextView phoneText;
     @InjectView(R.id.placeDetailsFragmentMainPanel)
     private LinearLayout mainViewPanel;
-    @InjectView(R.id.placeDetailsFragmentProgressBar)
-    private ProgressBar placeDetailsAreLoadingProgressBar;
     @InjectView(R.id.placeDetailsFragmentSelectPlaceLabel)
     private TextView selectAPlacePromotionLabel;
     @InjectView(R.id.placeDetailsPlaceType)
@@ -69,12 +68,15 @@ public class PlaceDetailsFragment extends RoboFragment {
     private Context context;
     @Inject
     private UiUtil uiUtil;
+    private ProgressDialog loadingDialog;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.place_details_fragment, container, false);
         eventBus.register(new PlaceSelectedRecorder());
+        createLoadingDialog();
         return view;
+
     }
 
     @Override
@@ -86,18 +88,20 @@ public class PlaceDetailsFragment extends RoboFragment {
     }
 
     public void loadPlaceDetails(Place place) {
-        placeDetailsAreLoadingProgressBar.setVisibility(VISIBLE);
         selectAPlacePromotionLabel.setVisibility(INVISIBLE);
         showPlaceDetails(place, context.getString(R.string.place_details_loading_label));
-        placesSearchService.loadPlaceDetails(place, new PlacesSearchListener() {
-            @Override
-            public void onResultReadyAndAppStateUpdated(PlacesApiResponseEntity placesApiResponseEntity) {
-                Place place = placesApiResponseEntity.getPlaceList().get(0);
-                appState.setLastSelectedPlaceDetails(place);
-                showPlaceDetails(appState.getLastSelectedPlaceDetails(), context.getString(R.string.place_details_empty_label));
-                placeDetailsAreLoadingProgressBar.setVisibility(INVISIBLE);
-            }
-        });
+        if (!place.isHasDetailedInfo()) {
+            showLoading("Loading place details, please wait...");
+            placesSearchService.loadPlaceDetails(place, new PlacesSearchListener() {
+                @Override
+                public void onResultReadyAndAppStateUpdated(PlacesApiResponseEntity placesApiResponseEntity) {
+                    Place place = placesApiResponseEntity.getPlaceList().get(0);
+                    appState.setLastSelectedPlaceDetails(place);
+                    showPlaceDetails(appState.getLastSelectedPlaceDetails(), context.getString(R.string.place_details_empty_label));
+                    loadingDialog.dismiss();
+                }
+            });
+        }
     }
 
     private void showPlaceDetails(Place place, String emptyText) {
@@ -117,7 +121,7 @@ public class PlaceDetailsFragment extends RoboFragment {
             if (place.getPlaceReview() != null) {
                 for (PlaceReview placeReview : place.getPlaceReview()) {
                     TextView ratingText = buildRatingText();
-                    ratingText.setText(Html.fromHtml("<b>"+placeReview.getAuthorName() + "</b>: " + placeReview.getText()));
+                    ratingText.setText(Html.fromHtml("<b color=\"#ffffff\">" + placeReview.getAuthorName() + "</b>: " + placeReview.getText()));
                     reviewsContainer.addView(ratingText);
                 }
             } else {
@@ -175,6 +179,21 @@ public class PlaceDetailsFragment extends RoboFragment {
                                                                  uiUtil.navigateToPlace(appState.getLastSelectedPlaceDetails());
                                                              }
                                                          });
+    }
+
+    private void createLoadingDialog() {
+        if (loadingDialog == null) {
+            loadingDialog = new ProgressDialog(getActivity());
+            loadingDialog.setIndeterminate(true);
+            loadingDialog.setCancelable(false);
+        }
+    }
+
+    private void showLoading(String message) {
+        if (!loadingDialog.isShowing()) {
+            loadingDialog.setMessage(message);
+            loadingDialog.show();
+        }
     }
 
     class PlaceSelectedRecorder {

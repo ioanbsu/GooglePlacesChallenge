@@ -8,7 +8,8 @@
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
+        android:layout_height="fill_parent"
+        android:padding="5dp">
 
         <fragment
             android:name="com.artigile.android.aroundme.app.fragment.PlaceDetailsFragment"
@@ -16,16 +17,6 @@
             android:layout_weight="1"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"/>
-
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Nearby parking"
-            android:id="@+id/textView"
-            android:layout_gravity="center"
-            style="@style/Theme.PlaceDetails.title"
-            android:layout_marginTop="50dp"/>
 
         <fragment
             android:name="com.artigile.android.aroundme.app.fragment.ParkingSpacesFragment"

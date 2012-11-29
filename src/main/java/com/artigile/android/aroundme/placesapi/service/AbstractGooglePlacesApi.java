@@ -1,6 +1,7 @@
 package com.artigile.android.aroundme.placesapi.service;
 
 import android.util.Log;
+import com.artigile.android.aroundme.placesapi.model.Place;
 import com.artigile.android.aroundme.placesapi.model.PlacesApiResponseEntity;
 
 import java.io.IOException;
@@ -19,8 +20,7 @@ public abstract class AbstractGooglePlacesApi implements GooglePlacesApi {
 
     protected abstract PlacesUrlsBuilder getUrlBuilder();
 
-    protected abstract PlacesApiResponseEntity parseStreamResponse(InputStream is,String mainTag) throws IOException;
-
+    protected abstract PlacesApiResponseEntity parseStreamResponse(InputStream is, String mainTag) throws IOException;
 
     protected HttpURLConnection buildConnection(String newUrl) throws IOException {
         URL url = new URL(newUrl);
@@ -32,30 +32,34 @@ public abstract class AbstractGooglePlacesApi implements GooglePlacesApi {
         return conn;
     }
 
-
     @Override
     public PlacesApiResponseEntity searchNearBy(String key, double longitude, double latitude, Integer radius,
                                                 RankByType rankBy, boolean sensor, String keyword, String language,
                                                 String name, Set<String> types, String pageToken) throws IOException {
         String requestUrl = getUrlBuilder().buildSearchNearBy(key, longitude, latitude, radius, rankBy, sensor, keyword, language, name,
                 types, pageToken);
-        return doRequestPlaceApi(requestUrl,"PlaceSearchResponse");
+        return doRequestPlaceApi(requestUrl, "PlaceSearchResponse");
     }
 
     @Override
     public PlacesApiResponseEntity textSearch(String key, String query, boolean sensor, String location, String radius, String language, List<String> types) throws IOException {
         String requestUrl = getUrlBuilder().buildTextSearch(key, query, sensor, location, radius, language, types);
-        return doRequestPlaceApi(requestUrl,"PlaceSearchResponse");
+        return doRequestPlaceApi(requestUrl, "PlaceSearchResponse");
     }
 
     @Override
     public PlacesApiResponseEntity getPlaceDetails(String key, String reference, boolean sensor, String language) throws IOException {
         String requestUrl = getUrlBuilder().buildPlaceDetails(key, reference, sensor, language);
-        return doRequestPlaceApi(requestUrl,"PlaceDetailsResponse");
+        PlacesApiResponseEntity placesApiResponseEntity = doRequestPlaceApi(requestUrl, "PlaceDetailsResponse");
+        if (placesApiResponseEntity.getPlaceList() != null) {
+            for (Place place : placesApiResponseEntity.getPlaceList()) {
+                place.setHasDetailedInfo(true);
+            }
+        }
+        return placesApiResponseEntity;
     }
 
-
-    private PlacesApiResponseEntity doRequestPlaceApi(String newUrl,String mainTag) throws IOException {
+    private PlacesApiResponseEntity doRequestPlaceApi(String newUrl, String mainTag) throws IOException {
         InputStream is = null;
         try {
             HttpURLConnection conn = buildConnection(newUrl);
@@ -63,7 +67,7 @@ public abstract class AbstractGooglePlacesApi implements GooglePlacesApi {
             int response = conn.getResponseCode();
             Log.d("DEBUG_TAG", "The response is: " + response);
             is = conn.getInputStream();
-            return parseStreamResponse(is,mainTag);
+            return parseStreamResponse(is, mainTag);
         } catch (Exception e) {
             return null;
         } finally {

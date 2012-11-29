@@ -11,12 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
-import com.artigile.android.aroundme.PlacesSearchService;
 import com.artigile.android.aroundme.R;
-import com.artigile.android.aroundme.app.AppState;
-import com.artigile.android.aroundme.app.LocationProvider;
-import com.artigile.android.aroundme.app.PlaceEfficientAdapter;
-import com.artigile.android.aroundme.app.PlacesSearchListener;
+import com.artigile.android.aroundme.app.*;
 import com.artigile.android.aroundme.app.event.PlaceSelectedEvent;
 import com.artigile.android.aroundme.app.util.AnimationUtil;
 import com.artigile.android.aroundme.app.util.UiUtil;
@@ -36,6 +32,7 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class SearchResultFragment extends RoboListFragment {
+    private final String IS_LOAD_ING_SHOWING_KEY = "LOADING_SHOWING_KEY";
     @InjectView(R.id.searchResultsView)
     private LinearLayout searchResultsView;
     @Inject
@@ -45,7 +42,7 @@ public class SearchResultFragment extends RoboListFragment {
     @Inject
     private AppState appState;
     @Inject
-    private LocationProvider locationProvider;
+    private AppLocationProvider appLocationProvider;
     @Inject
     private Context context;
     @Inject
@@ -54,7 +51,7 @@ public class SearchResultFragment extends RoboListFragment {
     private UiUtil uiUtil;
     private PlaceEfficientAdapter placeEfficientAdapter;
     private ProgressDialog loadingDialog;
-
+//    public static final String IS_LOADING_SHOWING_KEY="LOADING_SHIWONG_KEY";
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.search_list_fragment, container, false);
@@ -66,11 +63,26 @@ public class SearchResultFragment extends RoboListFragment {
         initOnResume();
     }
 
-    private void initOnResume() {
+/*    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(IS_LOADING_SHOWING_KEY,loadingDialog.isShowing());
+        loadingDialog.dismiss();
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         createLoadingDialog();
+        if(savedInstanceState!=null&&Objects.firstNonNull(savedInstanceState.getBoolean(IS_LOADING_SHOWING_KEY),false)){
+            showLoading(getActivity().getString(R.string.place_details_loading_label));
+        }
+    }*/
+
+    private void initOnResume() {
         createListView();
         initPlacesEfficientAdapter();
-        if (locationProvider.getLocation().getLatitude() == 0 && locationProvider.getLocation().getLongitude() == 0) {
+        if (appLocationProvider.getLocation().getLatitude() == 0 && appLocationProvider.getLocation().getLongitude() == 0) {
             Toast.makeText(getActivity().getBaseContext(), R.string.searching_gps_satellites_toast, 2);
         }
         if (appState.getFoundPlacesList() != null && appState.getFoundPlacesList().getPlaceList() != null) {
@@ -108,12 +120,8 @@ public class SearchResultFragment extends RoboListFragment {
             getListView().setItemChecked(position, true);
             eventBus.post(new PlaceSelectedEvent((Place) getListView().getItemAtPosition(position)));
         } else {
-            placesSearchService.loadPlaceDetails((Place) getListView().getItemAtPosition(position), new PlacesSearchListener() {
-                @Override
-                public void onResultReadyAndAppStateUpdated(PlacesApiResponseEntity placesApiResponseEntity) {
-                    uiUtil.showPlaceOnMap(SearchResultFragment.this);
-                }
-            });
+            uiUtil.showPlaceOnMap(SearchResultFragment.this);
+            appState.setSinglePlaceToDisplayOnMap((Place) getListView().getItemAtPosition(position));
         }
     }
 
@@ -137,7 +145,7 @@ public class SearchResultFragment extends RoboListFragment {
     }
 
     public boolean doSearch(final String searchQuery) {
-        if (locationProvider.getLocation().getLatitude() == 0 && locationProvider.getLocation().getLongitude() == 0) {
+        if (appLocationProvider.getLocation().getLatitude() == 0 && appLocationProvider.getLocation().getLongitude() == 0) {
             return false;
         }
         initPlacesEfficientAdapter();
@@ -150,35 +158,40 @@ public class SearchResultFragment extends RoboListFragment {
             searchResultsView.scrollTo(0, 0);
             appState.setRequestIsInProgress(false);
             placeEfficientAdapter.clear();
-            placesSearchService.searchPlaces(locationProvider, searchQuery, new PlacesSearchListener() {
+            placesSearchService.searchPlaces(appLocationProvider, searchQuery, new PlacesSearchListener() {
                 @Override
                 public void onResultReadyAndAppStateUpdated(PlacesApiResponseEntity placesApiResponseEntity) {
-                    if (placesApiResponseEntity.getPlaceList() != null) {
-                        placeEfficientAdapter.addAll(placesApiResponseEntity.getPlaceList());
-                        searchResultsView.animate();
-                    } else {
-                        String noResultsText;
-                        if (Strings.isNullOrEmpty(searchQuery)) {
-                            noResultsText = context.getString(R.string.search_places_nothing_found_in_area);
-                        } else {
-                            noResultsText = context.getString(R.string.search_places_nothing_found_by_query) + " \"" + searchQuery + "\"";
-                        }
-                        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                        final AlertDialog dialog = builder.setMessage(noResultsText).setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        }).show();
-                    }
-                    loadingDialog.dismiss();
+                    populateSearchResultsDataOnUi(placesApiResponseEntity, searchQuery);
                 }
             });
         } else {
-            loadingDialog.dismiss();
+            hideLoading();
         }
         return true;
     }
+
+    private void populateSearchResultsDataOnUi(PlacesApiResponseEntity placesApiResponseEntity, String searchQuery) {
+        if (placesApiResponseEntity.getPlaceList() != null) {
+            placeEfficientAdapter.addAll(placesApiResponseEntity.getPlaceList());
+            searchResultsView.animate();
+        } else {
+            String noResultsText;
+            if (Strings.isNullOrEmpty(searchQuery)) {
+                noResultsText = context.getString(R.string.search_places_nothing_found_in_area);
+            } else {
+                noResultsText = context.getString(R.string.search_places_nothing_found_by_query) + " \"" + searchQuery + "\"";
+            }
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setMessage(noResultsText).setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            }).show();
+        }
+        hideLoading();
+    }
+
 
     private void loadMorePlaces() {
         String loadingMessageToDisplay = context.getString(R.string.search_places_loading_window);
@@ -202,21 +215,19 @@ public class SearchResultFragment extends RoboListFragment {
                         }
                     }
                     appState.setRequestIsInProgress(false);
-                    loadingDialog.dismiss();
+                    hideLoading();
                 }
             });
         } else {
             appState.setRequestIsInProgress(false);
-            loadingDialog.dismiss();
+            hideLoading();
         }
     }
 
     private void createLoadingDialog() {
-        if (loadingDialog == null) {
-            loadingDialog = new ProgressDialog(getActivity());
-            loadingDialog.setIndeterminate(true);
-            loadingDialog.setCancelable(false);
-        }
+        loadingDialog = new ProgressDialog(getActivity());
+        loadingDialog.setIndeterminate(true);
+        loadingDialog.setCancelable(false);
     }
 
     private void showLoading(String message) {
@@ -226,12 +237,19 @@ public class SearchResultFragment extends RoboListFragment {
         }
     }
 
+
+    private void hideLoading() {
+        loadingDialog.dismiss();
+    }
+
     private void initPlacesEfficientAdapter() {
-        if (placeEfficientAdapter == null && locationProvider.getLocation().getLatitude() != 0 && locationProvider.getLocation().getLongitude() != 0) {
-            placeEfficientAdapter = new PlaceEfficientAdapter(context, locationProvider.getLocation());
+        if (placeEfficientAdapter == null && appLocationProvider.getLocation().getLatitude() != 0 && appLocationProvider.getLocation().getLongitude() != 0) {
+            placeEfficientAdapter = new PlaceEfficientAdapter(context, appLocationProvider.getLocation());
             getListView().setAdapter(placeEfficientAdapter);
         }
     }
+
+
 
 
 }

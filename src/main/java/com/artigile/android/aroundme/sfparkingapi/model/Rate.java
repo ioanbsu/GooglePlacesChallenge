@@ -13,11 +13,11 @@ public class Rate implements Serializable {
     /**
      * Indicates the begin time for this rate schedule
      */
-    private Date beg;
+    private String beg;
     /**
      * "END": "Indicates the end time for this rate schedule ",
      */
-    private Date end;
+    private String end;
     /**
      * "RATE": "Applicable rate for this rate schedule",
      */
@@ -37,19 +37,19 @@ public class Rate implements Serializable {
      */
     private String rr;
 
-    public Date getBeg() {
+    public String getBeg() {
         return beg;
     }
 
-    public void setBeg(Date beg) {
+    public void setBeg(String beg) {
         this.beg = beg;
     }
 
-    public Date getEnd() {
+    public String getEnd() {
         return end;
     }
 
-    public void setEnd(Date end) {
+    public void setEnd(String end) {
         this.end = end;
     }
 

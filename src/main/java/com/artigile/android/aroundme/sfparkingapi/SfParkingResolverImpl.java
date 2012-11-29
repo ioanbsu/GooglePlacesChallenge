@@ -20,7 +20,8 @@ import java.net.URLConnection;
 @Singleton
 public class SfParkingResolverImpl implements SfParkingResolver {
 
-    public static final String testUrl = "http://api.sfpark.org/sfpark/rest/availabilityservice?lat=37.792275&long=-122.397089&radius=5&uom=mile&response=json&pricing=yes";
+    public static final String testUrl = "http://api.sfpark.org/sfpark/rest/availabilityservice?lat=37.792275&long=-122.397089&radius=0.5&uom=mile&response=json&pricing=yes";
+    private static final int MAX_RESULTS = 30;
     @Inject
     private SfParkingResponseParser sfParkingResponseParser;
     @Inject
@@ -28,10 +29,10 @@ public class SfParkingResolverImpl implements SfParkingResolver {
 
     @Override
     public void getParkingSpacesList(Place place) {
-        new AsyncTask<String, Void, String>() {
+        new AsyncTask<String, Void, ParkingPlacesResult>() {
 
             @Override
-            protected String doInBackground(String... params) {
+            protected ParkingPlacesResult doInBackground(String... params) {
                 InputStream is = null;
                 try {
                     URLConnection conn = new URL(testUrl).openConnection();
@@ -54,7 +55,14 @@ public class SfParkingResolverImpl implements SfParkingResolver {
                     if (is != null) {
                         is.close();
                     }
-                    return sb.toString();
+
+                    ParkingPlacesResult parkingPlacesResult = null;
+                    try {
+                        parkingPlacesResult = sfParkingResponseParser.parse(sb.toString(), MAX_RESULTS);
+                    } catch (ParkingResultNotSuccessException e) {
+
+                    }
+                    return parkingPlacesResult;
                 } catch (Exception e) {
                     Log.e("Buffer Error", "Error converting result " + e.toString());
                 }
@@ -62,16 +70,10 @@ public class SfParkingResolverImpl implements SfParkingResolver {
             }
 
             @Override
-            protected void onPostExecute(String response) {
-                ParkingPlacesResult parkingPlacesResult = null;
-                try {
-                    parkingPlacesResult = sfParkingResponseParser.parse(response);
-                    if (parkingPlacesResult != null) {
-                        Log.i("parking place result:", parkingPlacesResult.toString());
-                        eventBus.post(new ParkingInfoReadyEvent(parkingPlacesResult));
-                    }
-                } catch (ParkingResultNotSuccessException e) {
-                    e.printStackTrace();
+            protected void onPostExecute(ParkingPlacesResult parkingPlacesResult) {
+                if (parkingPlacesResult != null) {
+                    Log.i("parking place result:", parkingPlacesResult.getStatus());
+                    eventBus.post(new ParkingInfoReadyEvent(parkingPlacesResult));
                 }
             }
         }.execute();

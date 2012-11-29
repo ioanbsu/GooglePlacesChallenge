@@ -43,7 +43,6 @@ public class SfParkingResponseParserImpl implements SfParkingResponseParser {
     private static final String PARKING_SPACE_LOC = "LOC";
     private static final String PARKING_SPACE_OPHRS = "OPHRS";
     private static final String PARKING_SPACE_RATES = "RATES";
-
     //    =================RATES CONSTANTS=======================
     private static final String RATE_BEG = "BEG";
     private static final String RATE_END = "END";
@@ -52,7 +51,6 @@ public class SfParkingResponseParserImpl implements SfParkingResponseParser {
     private static final String RATE_RQ = "RQ";
     private static final String RATE_RR = "RR";
     private static final String RATE_RS = "RS";
-
     //    =================OPERATION HOURS CONSTANTS=======================
     private static final String OPHRS_FROM = "FROM";
     private static final String OPHRS_END = "END";
@@ -60,10 +58,8 @@ public class SfParkingResponseParserImpl implements SfParkingResponseParser {
     private static final String OPHRS_BEG = "BEG";
     private static final String OPHRS_OPS = "OPS";
 
-    public static final int MAX_PARSED_RESULTS=50;
-
     @Override
-    public ParkingPlacesResult parse(String response) throws ParkingResultNotSuccessException {
+    public ParkingPlacesResult parse(String response,int maxResults) throws ParkingResultNotSuccessException {
         try {
             JSONObject jObj = new JSONObject(response);
             ParkingPlacesResult parkingPlacesResult = new ParkingPlacesResult();
@@ -82,14 +78,14 @@ public class SfParkingResponseParserImpl implements SfParkingResponseParser {
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-            parkingPlacesResult.setAvl(getAvlFromJson(jObj.optJSONArray(AVL)));
+            parkingPlacesResult.setAvl(getAvlFromJson(jObj.optJSONArray(AVL),maxResults));
             return parkingPlacesResult;
         } catch (JSONException e) {
             return null;
         }
     }
 
-    private List<ParkingSpace> getAvlFromJson(JSONArray parkingSpacesJsonArray) {
+    private List<ParkingSpace> getAvlFromJson(JSONArray parkingSpacesJsonArray,int maxResults) {
         List<ParkingSpace> parkingSpaceList = new ArrayList<ParkingSpace>();
         if (parkingSpacesJsonArray != null) {
             for (int i = 0; i < parkingSpacesJsonArray.length(); i++) {
@@ -110,7 +106,7 @@ public class SfParkingResponseParserImpl implements SfParkingResponseParser {
                     parkingSpace.setOphrs(getOpenHoursFromJson(parkingSpaceJson.optJSONObject(PARKING_SPACE_OPHRS)));
                     parkingSpace.setRates(getRatesFromJson(parkingSpaceJson.optJSONObject(PARKING_SPACE_RATES)));
                     parkingSpaceList.add(parkingSpace);
-                    if(i>MAX_PARSED_RESULTS){
+                    if (i > maxResults-2) {
                         break;
                     }
 
@@ -170,16 +166,8 @@ public class SfParkingResponseParserImpl implements SfParkingResponseParser {
                 try {
                     JSONObject rateJson = ratesJsonArray.getJSONObject(i);
                     Rate rate = new Rate();
-                    try {
-                        rate.setBeg(DATE_TIME_FORMAT.parse(rateJson.optString(RATE_BEG)));
-                    } catch (ParseException e) {
-                        //Log.w("Parsing rate", "Failed to parse rate BEG date: " + rateJson.optString(RATE_BEG));
-                    }
-                    try {
-                        rate.setBeg(DATE_TIME_FORMAT.parse(rateJson.optString(RATE_END)));
-                    } catch (ParseException e) {
-                        //Log.w("Parsing rate", "Failed to parse rate END date: " + rateJson.optString(RATE_END));
-                    }
+                    rate.setBeg(rateJson.optString(RATE_BEG));
+                    rate.setEnd(rateJson.optString(RATE_END));
 
                     rate.setRate(rateJson.optDouble(RATE_RATE));
                     rate.setDesc(rateJson.optString(RATE_DESC));

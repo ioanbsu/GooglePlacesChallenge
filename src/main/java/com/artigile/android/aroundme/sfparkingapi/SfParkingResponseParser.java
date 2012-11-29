@@ -11,5 +11,5 @@ import com.google.inject.ImplementedBy;
 @ImplementedBy(SfParkingResponseParserImpl.class)
 public interface SfParkingResponseParser {
 
-    ParkingPlacesResult parse(String response) throws ParkingResultNotSuccessException;
+    ParkingPlacesResult parse(String response,int maxResults) throws ParkingResultNotSuccessException;
 }

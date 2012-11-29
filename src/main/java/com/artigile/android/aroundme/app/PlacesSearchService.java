@@ -1,14 +1,12 @@
-package com.artigile.android.aroundme;
+package com.artigile.android.aroundme.app;
 
 import android.os.AsyncTask;
-import com.artigile.android.aroundme.app.AppState;
+import com.artigile.android.aroundme.R;
+import com.artigile.android.aroundme.app.event.PlacesSearchResultsAvailableEvent;
 import com.artigile.android.aroundme.placesapi.model.Place;
 import com.artigile.android.aroundme.placesapi.model.PlacesApiResponseEntity;
 import com.artigile.android.aroundme.placesapi.service.GooglePlacesApiImpl;
 import com.artigile.android.aroundme.placesapi.service.RankByType;
-import com.artigile.android.aroundme.app.LocationProvider;
-import com.artigile.android.aroundme.app.PlacesSearchListener;
-import com.artigile.android.aroundme.app.event.PlacesSearchResultsAvailableEvent;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
@@ -32,11 +30,10 @@ public class PlacesSearchService {
     private String apiKey;
     @Inject
     private EventBus eventBus;
-
-    private boolean isQueued=false;
+    private boolean isQueued = false;
 
     public void loadPlaceDetails(Place place, final PlacesSearchListener placesSearchListener) {
-        isQueued=true;
+        isQueued = true;
         new AsyncTask<Place, Void, PlacesApiResponseEntity>() {
 
             @Override
@@ -51,19 +48,20 @@ public class PlacesSearchService {
 
             @Override
             protected void onPostExecute(PlacesApiResponseEntity result) {
-                isQueued=false;
                 super.onPostExecute(result);
+                isQueued = false;
                 if (appState.getLastSearchResult() != null & appState.getLastSearchResult().getPlaceList() != null
                         && !appState.getLastSearchResult().getPlaceList().isEmpty()) {
-                    appState.setSinglePlaceToDisplayOnMap(result);
+                    if (result.getPlaceList() != null && result.getPlaceList().size() > 0)
+                        appState.setSinglePlaceToDisplayOnMap(result.getPlaceList().get(0));
                     placesSearchListener.onResultReadyAndAppStateUpdated(result);
                 }
             }
         }.execute(place);
     }
 
-    public void searchPlaces(final LocationProvider locationProvider, final String searchQuery, final PlacesSearchListener placesSearchListener) {
-        isQueued=true;
+    public void searchPlaces(final AppLocationProvider appLocationProvider, final String searchQuery, final PlacesSearchListener placesSearchListener) {
+        isQueued = true;
         appState.setFoundPlacesList(null);
         new AsyncTask<String, Void, PlacesApiResponseEntity>() {
             @Override
@@ -71,7 +69,7 @@ public class PlacesSearchService {
                 try {
                     RankByType rankByType = Strings.isNullOrEmpty(searchQuery) ? RankByType.PROMINENCE : RankByType.DISTANCE;
                     PlacesApiResponseEntity placesApiResponseEntity = googlePlacesApi.searchNearBy(apiKey,
-                            locationProvider.getLocation().getLongitude(), locationProvider.getLocation().getLatitude(), MAX_ALLOWED_RADIUS, rankByType, true, searchQuery, null, null, null, null);
+                            appLocationProvider.getLocation().getLongitude(), appLocationProvider.getLocation().getLatitude(), MAX_ALLOWED_RADIUS, rankByType, true, searchQuery, null, null, null, null);
                     return placesApiResponseEntity;
 
                 } catch (IOException e) {
@@ -82,7 +80,7 @@ public class PlacesSearchService {
 
             @Override
             protected void onPostExecute(PlacesApiResponseEntity place) {
-                isQueued=false;
+                isQueued = false;
                 appState.setLastSearchResult(place);
                 appState.setFoundPlacesList(place);
                 eventBus.post(new PlacesSearchResultsAvailableEvent());
@@ -92,7 +90,7 @@ public class PlacesSearchService {
     }
 
     public void loadMorePlaces(final PlacesSearchListener placesSearchListener) {
-        isQueued=true;
+        isQueued = true;
         if (appState.getLastSearchResult().getNextPageToken() != null) {
             new AsyncTask<String, Void, PlacesApiResponseEntity>() {
                 @Override
@@ -108,7 +106,7 @@ public class PlacesSearchService {
 
                 @Override
                 protected void onPostExecute(PlacesApiResponseEntity places) {
-                    isQueued=false;
+                    isQueued = false;
                     appState.setLastSearchResult(places);
                     if (appState.getFoundPlacesList() == null) {
                         appState.setFoundPlacesList(places);

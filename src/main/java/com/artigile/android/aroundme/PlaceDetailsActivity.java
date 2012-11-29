@@ -26,6 +26,7 @@ public class PlaceDetailsActivity extends RoboFragmentActivity {
         setContentView(R.layout.place_details_activity);
     }
 
+
     @Override
     protected void onResume() {
         super.onResume();

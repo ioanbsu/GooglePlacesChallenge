@@ -42,6 +42,8 @@ public class Place {
 
     private String website;
 
+    private boolean hasDetailedInfo;
+
     public String getId() {
         return id;
     }
@@ -176,6 +178,14 @@ public class Place {
 
     public void setWebsite(String website) {
         this.website = website;
+    }
+
+    public boolean isHasDetailedInfo() {
+        return hasDetailedInfo;
+    }
+
+    public void setHasDetailedInfo(boolean hasDetailedInfo) {
+        this.hasDetailedInfo = hasDetailedInfo;
     }
 
     @Override

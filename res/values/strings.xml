@@ -18,11 +18,11 @@
     <string name="balloon_place_details">Place details</string>
     <string name="no_more_results_to_display_toast">No more results so far in your area. Try using different filter</string>
     <string name="my_location_on_map_overlay_name">ME!</string>
-    <string name="search_places_loading_window">Searching places, please wait...</string>
-    <string name="search_places_loading_window_loading_more">Loading more...</string>
+    <string name="search_places_loading_window">Searching places, please wait…</string>
+    <string name="search_places_loading_window_loading_more">Loading more…</string>
     <string name="search_places_loading_window_loading_even_more">Even more!!! :)</string>
-    <string name="search_please_wait_for_better_gps_signal">Please wait for the better GPS signal</string>
-    <string name="searching_gps_satellites_toast">Searching GPS satellites, please wait...</string>
+    <string name="search_please_wait_for_better_gps_signal">Please wait for the better GPS signal. Search will be started automatically.</string>
+    <string name="searching_gps_satellites_toast">Searching GPS satellites, please wait…</string>
     <string name="place_details_fragment_select_place_label"><![CDATA[<-Select a place]]></string>
     <string name="place_details_address_title">Address:</string>
     <string name="place_details_web_page">Web Page:</string>
@@ -33,8 +33,19 @@
     <string name="place_details_reviews_title">Reviews:</string>
     <string name="place_details_no_reviews">no reviews available for this place</string>
     <string name="place_details_empty_label">(empty)</string>
-    <string name="place_details_loading_label">loading...</string>
+    <string name="place_details_loading_label">loading…</string>
     <string name="search_places_nothing_found_in_area">Sorry, nothing was found in this area. Please try to search later</string>
     <string name="search_places_nothing_found_by_query">Nothing was found by query:</string>
-    <string name="parking_place_navigate">Navigate</string>
+    <string name="parking_place_navigate">Go!</string>
+    <string name="parking_place_operation_hours">Operation hours:</string>
+    <string name="parking_place_parking_rates">Parking Rates:</string>
+    <string name="parking_off_street_parking">Off street parking</string>
+    <string name="parking_on_street_parking">On street parking</string>
+    <string name="parking_nearby_parkng_title">Nearby parking</string>
+    <string name="parking_loading_data_text">Refreshing parking data, please wait</string>
+    <string name="parking_no_parking_found_in_area_message">Unfortunately no parking data available for this area.
+        Please check back later.
+    </string>
+    <string name="place_details_access_horizontal_divider">horizontal divider</string>
+    <string name="parking_navigate_ro_parking_lot">Navigate to this parking lot</string>
 </resources>

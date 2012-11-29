@@ -3,7 +3,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
               android:layout_width="fill_parent"
-              android:padding="30dp"
               android:layout_height="fill_parent">
     <View
         xmlns:android="http://schemas.android.com/apk/res/android"
@@ -30,14 +29,16 @@
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"/>
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/parking_place_navigate"
-            android:id="@+id/navigateToParkingPlaceButton"
-            android:layout_alignParentRight="true"
-            android:layout_alignTop="@+id/parkingPlaceName"
-            android:layout_marginRight="20dp"/>
+        <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:id="@+id/navigateToParkingPlaceButton"
+                android:src="@drawable/my_location"
+                android:scaleType="fitCenter"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:contentDescription="@string/parking_navigate_ro_parking_lot"/>
+
     </RelativeLayout>
 
     <View
@@ -73,10 +74,28 @@
                 android:layout_gravity="left|center_vertical"/>
 
             <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/parking_place_operation_hours"
+                    android:id="@+id/parkingPlaceOperationHoursTitle"
+                    android:layout_gravity="left|center_vertical"
+                    android:textStyle="bold"
+                    android:textColor="#ffffff"/>
+
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/parkingPlaceHoursOfOperation"
                 android:layout_gravity="left|center_vertical"/>
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/parking_place_parking_rates"
+                    android:id="@+id/parkingPlaceParkingRatesTitle"
+                    android:layout_gravity="left|center_vertical"
+                    android:textStyle="bold"
+                    android:textColor="#ffffff"/>
 
             <TextView
                 android:layout_width="wrap_content"

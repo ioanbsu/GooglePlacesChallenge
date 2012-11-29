@@ -3,6 +3,7 @@ package com.artigile.android.aroundme;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -13,12 +14,12 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.Toast;
+import com.artigile.android.aroundme.app.AppLocationProvider;
 import com.artigile.android.aroundme.app.AppState;
-import com.artigile.android.aroundme.app.LocationProvider;
+import com.artigile.android.aroundme.app.event.PendingSearchEvent;
 import com.artigile.android.aroundme.app.fragment.SearchResultFragment;
-import com.artigile.android.aroundme.sfparkingapi.SfParkingResolver;
-import com.artigile.android.aroundme.sfparkingapi.SfParkingResolverImpl;
-import com.google.inject.ImplementedBy;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import roboguice.activity.RoboFragmentActivity;
@@ -31,29 +32,33 @@ import static android.view.View.VISIBLE;
 @Singleton
 public class GooglePlaces extends RoboFragmentActivity implements SearchView.OnQueryTextListener {
 
-    @Inject
-    private LocationProvider locationProvider;
-    @Inject
-    private AppState appState;
     @InjectFragment(R.id.searchResultsFragment)
     private SearchResultFragment searchResultFragment;
     @InjectView(R.id.doSearchMainButton)
     private ImageView doSearchMainButton;
+    @Inject
+    private AppLocationProvider appLocationProvider;
+    @Inject
+    private AppState appState;
+    @Inject
+    private EventBus eventBus;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.search_results_page);
-        if (locationProvider.getLocation().getLatitude() == 0 && locationProvider.getLocation().getLongitude() == 0) {
+        if (appLocationProvider.getLocation().getLatitude() == 0 && appLocationProvider.getLocation().getLongitude() == 0) {
             Toast.makeText(getBaseContext(), R.string.searching_gps_satellites_toast, 2);
         }
+        eventBus.register(new PendingEventRecorder());
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         doSearchMainButton.setVisibility(appState.isStartSearchButtonShow() ? VISIBLE : INVISIBLE);
-        ((LocationManager) getSystemService(Context.LOCATION_SERVICE)).requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationProvider);
+        ((LocationManager) getSystemService(Context.LOCATION_SERVICE)).requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, appLocationProvider);
     }
 
     @Override
@@ -70,11 +75,11 @@ public class GooglePlaces extends RoboFragmentActivity implements SearchView.OnQ
     @Override
     protected void onStop() {
         super.onStop();
-        ((LocationManager) getSystemService(Context.LOCATION_SERVICE)).removeUpdates(locationProvider);
+        ((LocationManager) getSystemService(Context.LOCATION_SERVICE)).removeUpdates(appLocationProvider);
     }
 
     public void showAllOnMap(MenuItem v) {
-        appState.setSinglePlaceToDisplayOnMap(appState.getFoundPlacesList());
+        appState.setFoundPlacesList(appState.getFoundPlacesList());
         showMap();
     }
 
@@ -101,6 +106,7 @@ public class GooglePlaces extends RoboFragmentActivity implements SearchView.OnQ
         DisplayMetrics displaymetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
         if (!searchResultFragment.doSearch(query)) {
+            appState.setPendingSearchEvent(new PendingSearchEvent(query));
             Toast.makeText(getBaseContext(), R.string.search_please_wait_for_better_gps_signal, 10).show();
         } else {
             doSearchMainButton.setVisibility(INVISIBLE);
@@ -111,6 +117,13 @@ public class GooglePlaces extends RoboFragmentActivity implements SearchView.OnQ
         Intent intent = new Intent(getBaseContext(), MapResultsActivity.class);
         startActivity(intent);
         overridePendingTransition(R.anim.zoom_enter, R.anim.zoom_exit);
+    }
+
+    private class PendingEventRecorder {
+        @Subscribe
+        public void recordPlacesSearchResultReady(PendingSearchEvent e) {
+            doSearch(e.getSearchQuery());
+        }
     }
 }
 

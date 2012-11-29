@@ -1,9 +1,11 @@
 package com.artigile.android.aroundme.app;
 
+import com.artigile.android.aroundme.app.event.PendingSearchEvent;
 import com.artigile.android.aroundme.placesapi.model.Place;
 import com.artigile.android.aroundme.placesapi.model.PlacesApiResponseEntity;
 
 import javax.inject.Singleton;
+import java.util.Map;
 
 /**
  * @author IoaN, 11/10/12 3:56 PM
@@ -13,7 +15,7 @@ public class AppState {
 
     private PlacesApiResponseEntity lastSearchResult;
 
-    private PlacesApiResponseEntity singlePlaceToDisplayOnMap;
+    private Place singlePlaceToDisplayOnMap;
 
     private PlacesApiResponseEntity foundPlacesList;
 
@@ -23,6 +25,8 @@ public class AppState {
 
     private boolean startSearchButtonShow=true;
 
+    private PendingSearchEvent pendingSearchEvent;
+
     public PlacesApiResponseEntity getLastSearchResult() {
         return lastSearchResult;
     }
@@ -31,11 +35,11 @@ public class AppState {
         this.lastSearchResult = lastSearchResult;
     }
 
-    public PlacesApiResponseEntity getSinglePlaceToDisplayOnMap() {
+    public Place getSinglePlaceToDisplayOnMap() {
         return singlePlaceToDisplayOnMap;
     }
 
-    public void setSinglePlaceToDisplayOnMap(PlacesApiResponseEntity singlePlaceToDisplayOnMap) {
+    public void setSinglePlaceToDisplayOnMap(Place singlePlaceToDisplayOnMap) {
         this.singlePlaceToDisplayOnMap = singlePlaceToDisplayOnMap;
     }
 
@@ -69,5 +73,13 @@ public class AppState {
 
     public void setLastSelectedPlaceDetails(Place lastSelectedPlaceDetails) {
         this.lastSelectedPlaceDetails = lastSelectedPlaceDetails;
+    }
+
+    public PendingSearchEvent getPendingSearchEvent() {
+        return pendingSearchEvent;
+    }
+
+    public void setPendingSearchEvent(PendingSearchEvent pendingSearchEvent) {
+        this.pendingSearchEvent = pendingSearchEvent;
     }
 }

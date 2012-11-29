@@ -1,9 +1,11 @@
 package com.artigile.android.aroundme.app.util;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.app.Fragment;
+import com.artigile.android.aroundme.GooglePlaces;
 import com.artigile.android.aroundme.MapResultsActivity;
 import com.artigile.android.aroundme.placesapi.model.Place;
 import com.google.common.base.Strings;
@@ -23,6 +25,11 @@ public class UiUtil {
     public void showPlaceOnMap(Fragment fragment) {
         Intent intent = new Intent(context, MapResultsActivity.class);
         fragment.startActivity(intent);
+    }
+
+    public void showSearchPage(Activity activity) {
+        Intent intent = new Intent(context, GooglePlaces.class);
+        activity.startActivity(intent);
     }
 
     public void navigateToPlace(Place place) {
