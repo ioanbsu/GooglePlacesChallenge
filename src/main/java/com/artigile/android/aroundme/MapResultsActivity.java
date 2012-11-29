@@ -216,7 +216,7 @@ public class MapResultsActivity extends RoboMapActivity {
 
     private PlaceOverlay createMapOverlay(Place place, Bitmap bitmap, GeoPoint geoPoint) {
         final PlaceOverlay baloonOverlay = new PlaceOverlay(scaleBitmap(bitmap), mapView, place);
-        baloonOverlay.setBalloonBottomOffset(30);
+        baloonOverlay.setBalloonBottomOffset(40);
         OverlayItem overlayItem = new OverlayItem(geoPoint, place.getName(), null);
         baloonOverlay.addOverlay(overlayItem);
         return baloonOverlay;

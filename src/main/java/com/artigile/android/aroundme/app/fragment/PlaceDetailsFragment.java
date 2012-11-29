@@ -89,8 +89,8 @@ public class PlaceDetailsFragment extends RoboFragment {
 
     public void loadPlaceDetails(Place place) {
         selectAPlacePromotionLabel.setVisibility(INVISIBLE);
-        showPlaceDetails(place, context.getString(R.string.place_details_loading_label));
         if (!place.isHasDetailedInfo()) {
+            showPlaceDetails(place, context.getString(R.string.place_details_loading_label));
             showLoading("Loading place details, please wait...");
             placesSearchService.loadPlaceDetails(place, new PlacesSearchListener() {
                 @Override
@@ -101,6 +101,8 @@ public class PlaceDetailsFragment extends RoboFragment {
                     loadingDialog.dismiss();
                 }
             });
+        }   else{
+            showPlaceDetails(place, context.getString(R.string.place_details_empty_label));
         }
     }
 

@@ -36,6 +36,7 @@
     <string name="place_details_loading_label">loading…</string>
     <string name="search_places_nothing_found_in_area">Sorry, nothing was found in this area. Please try to search later</string>
     <string name="search_places_nothing_found_by_query">Nothing was found by query:</string>
+    <string name="search_places_nothing_found_by_query_in_your_area">in your area</string>
     <string name="parking_place_navigate">Go!</string>
     <string name="parking_place_operation_hours">Operation hours:</string>
     <string name="parking_place_parking_rates">Parking Rates:</string>

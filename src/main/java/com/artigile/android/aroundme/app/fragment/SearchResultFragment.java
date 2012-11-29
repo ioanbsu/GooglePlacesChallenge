@@ -179,7 +179,8 @@ public class SearchResultFragment extends RoboListFragment {
             if (Strings.isNullOrEmpty(searchQuery)) {
                 noResultsText = context.getString(R.string.search_places_nothing_found_in_area);
             } else {
-                noResultsText = context.getString(R.string.search_places_nothing_found_by_query) + " \"" + searchQuery + "\"";
+                noResultsText = context.getString(R.string.search_places_nothing_found_by_query) + " \"" + searchQuery + "\" "
+                        + context.getString(R.string.search_places_nothing_found_by_query_in_your_area);
             }
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
             builder.setMessage(noResultsText).setPositiveButton("Ok", new DialogInterface.OnClickListener() {
