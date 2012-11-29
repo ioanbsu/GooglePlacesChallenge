@@ -61,6 +61,7 @@ public class PlacesSearchService {
     }
 
     public void searchPlaces(final AppLocationProvider appLocationProvider, final String searchQuery, final PlacesSearchListener placesSearchListener) {
+        appState.setPendingSearchEvent(null);
         isQueued = true;
         appState.setFoundPlacesList(null);
         new AsyncTask<String, Void, PlacesApiResponseEntity>() {

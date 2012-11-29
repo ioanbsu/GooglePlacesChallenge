@@ -123,9 +123,11 @@ public class BalloonOverlayView<Item extends OverlayItem> extends FrameLayout {
             snippet.setVisibility(VISIBLE);
             snippet.setText(selectedPlace.getVicinity());
             navigate.setVisibility(VISIBLE);
+            balloonPlaceDetails.setVisibility(VISIBLE);
         } else {
             snippet.setText("");
             snippet.setVisibility(GONE);
+            balloonPlaceDetails.setVisibility(GONE);
             navigate.setVisibility(GONE);
         }
         if (selectedPlace.getRating() != null) {

@@ -7,10 +7,7 @@ import android.content.res.Configuration;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
+import android.view.*;
 import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.Toast;
@@ -51,7 +48,6 @@ public class GooglePlaces extends RoboFragmentActivity implements SearchView.OnQ
             Toast.makeText(getBaseContext(), R.string.searching_gps_satellites_toast, 2);
         }
         eventBus.register(new PendingEventRecorder());
-
     }
 
     @Override
@@ -79,6 +75,7 @@ public class GooglePlaces extends RoboFragmentActivity implements SearchView.OnQ
     }
 
     public void showAllOnMap(MenuItem v) {
+        appState.setSinglePlaceToDisplayOnMap(null);
         appState.setFoundPlacesList(appState.getFoundPlacesList());
         showMap();
     }

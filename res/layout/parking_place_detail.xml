@@ -80,7 +80,8 @@
                     android:id="@+id/parkingPlaceOperationHoursTitle"
                     android:layout_gravity="left|center_vertical"
                     android:textStyle="bold"
-                    android:textColor="#ffffff"/>
+                    android:textColor="#ffffff"
+                    android:textSize="16dp"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -95,7 +96,8 @@
                     android:id="@+id/parkingPlaceParkingRatesTitle"
                     android:layout_gravity="left|center_vertical"
                     android:textStyle="bold"
-                    android:textColor="#ffffff"/>
+                    android:textColor="#ffffff"
+                    android:textSize="16dp"/>
 
             <TextView
                 android:layout_width="wrap_content"

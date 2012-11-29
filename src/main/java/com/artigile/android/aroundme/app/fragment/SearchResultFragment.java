@@ -1,15 +1,17 @@
 package com.artigile.android.aroundme.app.fragment;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.*;
 import com.artigile.android.aroundme.R;
 import com.artigile.android.aroundme.app.*;
@@ -63,7 +65,7 @@ public class SearchResultFragment extends RoboListFragment {
         initOnResume();
     }
 
-/*    @Override
+  /*  @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(IS_LOADING_SHOWING_KEY,loadingDialog.isShowing());
@@ -80,6 +82,7 @@ public class SearchResultFragment extends RoboListFragment {
     }*/
 
     private void initOnResume() {
+        createLoadingDialog();
         createListView();
         initPlacesEfficientAdapter();
         if (appLocationProvider.getLocation().getLatitude() == 0 && appLocationProvider.getLocation().getLongitude() == 0) {
@@ -172,8 +175,7 @@ public class SearchResultFragment extends RoboListFragment {
 
     private void populateSearchResultsDataOnUi(PlacesApiResponseEntity placesApiResponseEntity, String searchQuery) {
         if (placesApiResponseEntity.getPlaceList() != null) {
-            placeEfficientAdapter.addAll(placesApiResponseEntity.getPlaceList());
-            searchResultsView.animate();
+            ((PlaceEfficientAdapter)getListView().getAdapter()).addAll(placesApiResponseEntity.getPlaceList());
         } else {
             String noResultsText;
             if (Strings.isNullOrEmpty(searchQuery)) {
@@ -208,7 +210,7 @@ public class SearchResultFragment extends RoboListFragment {
                 @Override
                 public void onResultReadyAndAppStateUpdated(PlacesApiResponseEntity placesApiResponseEntity) {
                     if (placesApiResponseEntity == null) {
-                        //  Toast.makeText(getBaseContext(), R.string.no_more_results_to_display_toast, 1).show();
+
                     } else {
                         if (placesApiResponseEntity.getPlaceList() != null) {
                             placeEfficientAdapter.addAll(placesApiResponseEntity.getPlaceList());
@@ -231,6 +233,7 @@ public class SearchResultFragment extends RoboListFragment {
     }
 
     private void showLoading(String message) {
+        uiUtil.disableRotation(getActivity());
         if (!loadingDialog.isShowing()) {
             loadingDialog.setMessage(message);
             loadingDialog.show();
@@ -240,6 +243,7 @@ public class SearchResultFragment extends RoboListFragment {
 
     private void hideLoading() {
         loadingDialog.dismiss();
+        uiUtil.enableRotation(getActivity());
     }
 
     private void initPlacesEfficientAdapter() {
@@ -248,6 +252,8 @@ public class SearchResultFragment extends RoboListFragment {
             getListView().setAdapter(placeEfficientAdapter);
         }
     }
+
+
 
 
 
